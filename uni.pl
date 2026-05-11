@@ -35,16 +35,18 @@ validify(PlayerNum, ValidNum) :-
 initPlayer(Index, PlayerNum, _, []) :- Index > PlayerNum, !.
 initPlayer(Index, PlayerNum, Taken, [Name | Rest]) :-
     Index =< PlayerNum,
-    format("\nMasukkan nama pemain ~d: ", [Index]),
-    read(InputName),
+    format("Masukkan nama pemain ~d: ", [Index]),
+    readUniqueName(Taken, Name),
+    NextIndex is Index + 1,
+    initPlayer(NextIndex, PlayerNum, [Name | Taken], Rest).
 
-    ( member(InputName, Taken) -> 
-      format("Nama sudah digunakan. Masukkan nama lain: "),
-      initPlayer(Index, PlayerNum, Taken, [Name | Rest])
+readUniqueName(Taken, Name) :-
+    read(InputName),
+    (member(InputName, Taken) ->
+      format("Nama sudah digunakan. Masukkan nama lain: ", []),
+      readUniqueName(Taken, Name)
     ;
-      Name = InputName,
-      NextIndex is Index + 1,
-      initPlayer(NextIndex, PlayerNum, [Name | Taken], Rest)
+      Name = InputName
     ).
 
 printOrder([Player]) :- format("~w", [Player]), !.
