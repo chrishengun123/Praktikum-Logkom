@@ -130,7 +130,7 @@ playCard(I) :-
     [LastCard|_] = SubDiscardPile,
     [LastColor, LastType] = LastCard,
     (
-    ((SubDiscardPile == []; Color == "black"; LastColor = "black"; Color == LastColor; Type == LastType; \+ (Type == "wild", LastType == "wild")) ->
+    ((SubDiscardPile == []; Color == "black"; LastColor = "black"; Color == LastColor; Type == LastType; \+ (Type == "wild", LastType == "wild"); \+ (Type == "wild_draw_4", LastType == "wild_draw_4")) ->
         delete_at(Cards, I, NewCards),
         DiscardPile = [Card | SubDiscardPile],
         write_file(File, NewCards),
