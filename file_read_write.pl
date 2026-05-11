@@ -23,6 +23,7 @@ read_file(File, Output) :-
     open(File, read, Stream),
     get_char(Stream, Char),
     read_file(Stream, Char, Data),
+    read_cards(Data, Output),
     close(Stream).
 
 write_file(File, Input) :-
