@@ -1,3 +1,4 @@
+% Converts the card name to usable card data.
 card_name_to_card([Char | SubCard], [Color,Type]) :- 
     (Char == "-" -> Color = [], Type = SubCard);
     card_name_to_card(SubCard, [SubColor,Type]),
