@@ -16,6 +16,10 @@ random(0, Length, RNG),
     get_element(Cards, RNG, Card),
     delete_at(Cards, RNG, NewCards).
 
+pop_card(Cards, I, NewCards, Card) :- 
+    get_element(Cards, I, Card),
+    delete_at(Cards, I, NewCards).
+
 shuffle([], []).
 shuffle(List, [Elem | Shuffled]) :-
     get_length(List, Len),

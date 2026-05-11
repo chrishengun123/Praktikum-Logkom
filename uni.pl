@@ -73,7 +73,7 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 playCard(X) :-
     \+ started -> fail;
     read_file('kartu.txt', Cards),
-    pop_card(Cards, I, NewCards),
+    pop_card(Cards, I, NewCards, Card),
     write_file('kartu.txt', NewCards),
     format("Angka ~w dimainkan!\n", [Card]),
     NewCards == [] -> format("Selamat! Kamu menghabiskan semua kartumu. Kamu menang!!!\n", []);
