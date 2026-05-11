@@ -15,3 +15,16 @@ pop_random_card(Cards, NewCards, Card) :-
 random(0, Length, RNG),
     get_element(Cards, RNG, Card),
     delete_at(Cards, RNG, NewCards).
+
+shuffle([], []).
+shuffle(List, [Elem | Shuffled]) :-
+    get_length(List, Len),
+    random(0, Len, Index),
+    get_element(List, Index, Elem),
+    delete_at(List, Index, Rest),
+    shuffle(Rest, Shuffled).
+
+generate_deck(N, N, [N]) :- !.
+generate_deck(Current, Max, [Current | Rest]) :-
+    Next is Current + 1,
+    generate_deck(Next, Max, Rest).

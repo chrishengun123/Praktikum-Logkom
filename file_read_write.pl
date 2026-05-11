@@ -16,3 +16,10 @@ write_file(File, Input) :-
     open(File, write, Stream),
     format(Stream, "~w", [Input]),
     close(Stream).
+
+create_player_files([]).
+create_player_files([Name | Rest]) :-
+   atom_concat('kartu_', Name, Temp),
+   atom_concat(Temp, '.txt', FileName),
+   write_file(FileName, []),
+   create_player_files(Rest).
