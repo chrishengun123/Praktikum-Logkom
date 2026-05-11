@@ -1,12 +1,12 @@
 :- initialization([random_card, file_read_write]).
 :- dynamic(started/0).
-:- dynamic(firstPlayer/1).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
     format("\nMasukkan jumlah pemain: ", []),
     read(PlayerNum),
     validify(PlayerNum, ValidNum),
+    format("\n", []),
     initPlayer(1, ValidNum, [], Players),
     generate_deck(1, 40, Deck),
     shuffle(Deck, ShuffledDeck),
@@ -15,7 +15,6 @@ startGame :-
     shuffle(Players, [First | Rest]),
     printOrder([First | Rest]),
     format("\n", []),
-    asserta(firstPlayer(First)),
     format("\nSetiap pemain mendapatkan 7 kartu acak.\n", []),
     dealCards(ShuffledDeck, Players, [Discard | Unused]),
     write_file('unused_cards.txt', Unused),
