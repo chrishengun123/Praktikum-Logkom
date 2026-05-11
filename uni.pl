@@ -76,13 +76,14 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 
 playCard(I) :-
     \+ started -> fail;
-    atom_chars(Player, PlayerName),
+    currentPlayer(Player),
+    atom_codes(Player, PlayerName),
     append("kartu_", PlayerName, FileNameNoTXT),
     append(FileNameNoTXT, ".txt", FileName),
+    atom_codes(File, FileName),
     read_file(File, Cards),
     pop_card(Cards, I, NewCards, Card),
-    write_file(Files, NewCards),
-    currentPlayer(Player),
+    write_file(File, NewCards),
     format("~w memainkan kartu: ~w.\n", [Player, Card]),
     turnOrder(Order),
     get_length(Order, PlayerAmount),
