@@ -79,9 +79,15 @@ playCard(X) :-
     read_file('kartu.txt', Cards),
     pop_card(Cards, I, NewCards, Card),
     write_file('kartu.txt', NewCards),
-    format("Angka ~w dimainkan!\n", [Card]),
-    NewCards == [] -> format("Selamat! Kamu menghabiskan semua kartumu. Kamu menang!!!\n", []);
-    true.
+    currentPlayer(Player),
+    format("~w memainkan kartu: ~w.\n", [Player, Card]),
+    turnOrder(Order),
+    get_index(Order, Player, Turn),
+    get_length(Order, PlayerAmount),
+    NextTurn is (Turn+1) mod PlayerAmount,
+    get_element(Order, NextTurn, NextPlayer),
+    retract(currentPlayer(Player)),
+    asserta(currentPlayer(NextPlayer)).
 
 mainkanKartu(X) :- playCard(X).
 
