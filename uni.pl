@@ -1,7 +1,7 @@
 :- initialization([random_card, file_read_write]).
 :- dynamic(started/0).
 :- dynamic(currentPlayer/1).
-:- dynamic(turnOrder/1)
+:- dynamic(turnOrder/1).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -83,7 +83,7 @@ playCard(X) :-
     NewCards == [] -> format("Selamat! Kamu menghabiskan semua kartumu. Kamu menang!!!\n", []);
     true.
 
-mainkanKartu(X) :- play_card(X).
+mainkanKartu(X) :- playCard(X).
 
 display_status :-
     \+ started -> fail;
@@ -102,7 +102,7 @@ save :- true.
 load :- true.
 
 exit :-
-    started(0) -> format("Permainan belum dimulai. Gunakan \"start\" untuk memulai.", []),
+    \+ started -> format("Permainan belum dimulai. Gunakan \"start\" untuk memulai.", []),
                   fail;
     read_file('kartu_13525065.txt', Cards),
     open('hasil_13525065.txt', write, Stream),
