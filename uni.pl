@@ -102,6 +102,13 @@ cardEffect([_, Type]) :-
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer)
     );
+    ((Type == "draw_2") ->
+        ambilKartu, ambilKartu,
+        get_index(Order, Player, Turn),
+        NextTurn is (Turn+1) mod PlayerAmount,
+        get_element(Order, NextTurn, NextPlayer),
+        switchPlayer(Player, NextPlayer)
+    );
     true.
 
 % Plays the card at index I.
