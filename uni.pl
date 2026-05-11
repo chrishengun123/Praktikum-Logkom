@@ -79,6 +79,8 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
     N1 is N - 1,
     splitDeck(Deck, N1, Hand, Rest).
 
+% Plays the card at index I.
+% I:int
 playCard(I) :-
     \+ started -> fail;
     currentPlayer(Player),
@@ -99,7 +101,7 @@ playCard(I) :-
     retract(currentPlayer(Player)),
     asserta(currentPlayer(NextPlayer)).
 
-mainkanKartu(X) :- playCard(X).
+mainkanKartu(I) :- playCard(I).
 
 display_status :-
     \+ started -> fail;
