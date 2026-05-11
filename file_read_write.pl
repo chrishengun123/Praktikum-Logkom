@@ -4,19 +4,20 @@ card_name_to_card([Char | SubCard], [Color,Type]) :-
     card_name_to_card(SubCard, [SubColor,Type]),
     Color = [Char | SubColor].
 
-% Returns the first card in the list and removes it from the list.
-read_card([Char | SubList], NewList, Card) :-
-    ((Char == ",") -> Card = [], NewList = SubList);
-    read_card(SubList, NewList, SubCard),
+% Returns the first card name in the list and removes it from the list.
+read_card([Char | SubList], NewList, CardName) :-
+    ((Char == ",") -> CardName = [], NewList = SubList);
+    read_card(SubList, NewList, SubCardName),
     (
-        ((Char == "[") -> Card = SubCard);
-        Card = [Char | SubCard]
+        ((Char == "[") -> CardName = SubCardName);
+        CardName = [Char | SubCardName]
     ).
 
 % Returns all the cards in the list.
 read_cards(List, Cards) :- 
     (List == [] -> Cards = []);
-    read_card(List, SubList, Card),
+    read_card(List, SubList, CardName),
+    card_name_to_card(CardName, Card),
     read_cards(SubList, SubCards),
     Cards = [Card | SubCards].
 
