@@ -1,5 +1,9 @@
+card_name_to_card([Char | SubCard], [Color,Type]).
+
+card_to_card_name().
+
 % Returns the first card in the list and removes it from the list.
-read_card([Char|SubList], NewList, Card) :-
+read_card([Char | SubList], NewList, Card) :-
     ((Char == ",") -> Card = [], NewList = SubList);
     read_card(SubList, NewList, SubCard),
     (

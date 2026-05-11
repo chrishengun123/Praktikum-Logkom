@@ -90,6 +90,7 @@ playCard(I) :-
     atom_codes(File, FileName),
     read_file(File, Cards),
     get_element(Cards, I, Card),
+    ();
     delete_at(Cards, I, NewCards),
     write_file(File, NewCards),
     format("~w memainkan kartu: ~w.\n", [Player, Card]),
