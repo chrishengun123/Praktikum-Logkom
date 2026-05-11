@@ -5,9 +5,9 @@ get_color_and_type_string([Char | SubCard], [Color, Type]) :-
 
 % Converts the card name to usable card data.
 card_name_to_card(CardName, [Color, Type]) :- 
-    get_color_and_type_string(CardName, [ColorStr,TypeStr]),
-    atom_codes(Color, ColorStr),
-    atom_codes(Type, TypeStr).
+    get_color_and_type_string(CardName, [ColorStr,TypeStr]).
+    % atom_codes(Color, ColorStr),
+    % atom_codes(Type, TypeStr).
 
 % Returns the first card name in the list and removes it from the list.
 read_card([Char | SubList], NewList, CardName) :-

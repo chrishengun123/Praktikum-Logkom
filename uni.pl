@@ -87,18 +87,27 @@ playCard(I) :-
     get_hand_file(Player, File),
     read_file(File, Cards),
     get_element(Cards, I, Card),
-    delete_at(Cards, I, NewCards),
+    [Color, Type] = Card,
     read_file('discard.txt', SubDiscardPile),
-    [] = SubDiscardPile,
-    write_file(File, NewCards),
-    format("~w memainkan kartu: ~w.\n", [Player, Card]),
-    turnOrder(Order),
-    get_length(Order, PlayerAmount),
-    get_index(Order, Player, Turn),
-    NextTurn is (Turn+1) mod PlayerAmount,
-    get_element(Order, NextTurn, NextPlayer),
-    retract(currentPlayer(Player)),
-    asserta(currentPlayer(NextPlayer)).
+    [LastCard|_] = SubDiscardPile,
+    [LastColor, LastType] = LastCard,
+    (
+    ((SubDiscardPile == []; Color == "black"; LastColor = "black"; Color == LastColor; Type == LastType) ->
+        delete_at(Cards, I, NewCards),
+        DiscardPile = [Card | SubDiscardPile],
+        write_file(File, NewCards),
+        write_file('discard.txt', DiscardPile),
+        format("~w memainkan kartu: ~w.\n", [Player, Card]),
+        turnOrder(Order),
+        get_length(Order, PlayerAmount),
+        get_index(Order, Player, Turn),
+        NextTurn is (Turn+1) mod PlayerAmount,
+        get_element(Order, NextTurn, NextPlayer),
+        retract(currentPlayer(Player)),
+        asserta(currentPlayer(NextPlayer))
+    );
+        format("kartu ~w-~w tidak bisa dimainkan", Card)
+    ).
 
 mainkanKartu(I) :- playCard(I).
 
