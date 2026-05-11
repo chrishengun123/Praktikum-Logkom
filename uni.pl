@@ -86,12 +86,23 @@ switchPlayer(Player, NextPlayer) :-
 cardEffect([_, Type]) :-
     currentPlayer(Player),
     turnOrder(Order),
+    get_length(Order, PlayerAmount),
     ((Type == "skip") ->
         get_index(Order, Player, Turn),
-        NextTurn is Turn+1,
+        NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer)
-    ).
+    );
+    ((Type == "reverse") ->
+        reverse(Order, NewOrder),
+        retract(turnOrder(Order)),
+        assert(turnOrder(NewOrder)),
+        get_index(Order, Player, Turn),
+        NextTurn is Turn+2 mod PlayerAmount,
+        get_element(Order, NextTurn, NextPlayer),
+        switchPlayer(Player, NextPlayer)
+    );
+    true.
 
 % Plays the card at index I.
 % I:int
