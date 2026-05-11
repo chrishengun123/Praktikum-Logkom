@@ -1,3 +1,4 @@
+% Returns the first card in the list and removes it from the list.
 read_card([Char|SubList], NewList, Card) :-
     ((Char == ",") -> Card = [], NewList = SubList);
     read_card(SubList, NewList, SubCard),
@@ -6,6 +7,7 @@ read_card([Char|SubList], NewList, Card) :-
         Card = [Char | SubCard]
     ).
 
+% Returns all the cards in the list.
 read_cards(List, Cards) :- 
     (List = [] -> Cards = []);
     read_card(List, SubList, Card),
