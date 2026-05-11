@@ -1,6 +1,11 @@
 :- initialization([random_card, file_read_write]).
+% True when the game has started.
 :- dynamic(started/0).
+% The current player.
+% currentPlayer(Player), Player:atom
 :- dynamic(currentPlayer/1).
+% The order of players.
+% turnOrder(Order), Order:list = [Player|_], Player:atom
 :- dynamic(turnOrder/1).
 
 startGame :-
