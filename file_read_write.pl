@@ -1,8 +1,13 @@
-% Converts the card name to usable card data.
-card_name_to_card([Char | SubCard], [Color,Type]) :- 
+get_color_and_type_string([Char | SubCard], [Color, Type]) :- 
     (Char == "-" -> Color = [], Type = SubCard);
-    card_name_to_card(SubCard, [SubColor,Type]),
+    card_name_to_card(SubCard, [SubColor, Type]),
     Color = [Char | SubColor].
+
+% Converts the card name to usable card data.
+card_name_to_card(CardName, [Color, Type]) :- 
+    get_color_and_type_string(CardName, [ColorStr,TypeStr]),
+    atom_codes(Color, ColorStr),
+    atom_codes(Type, TypeStr).
 
 % Returns the first card name in the list and removes it from the list.
 read_card([Char | SubList], NewList, CardName) :-
@@ -20,6 +25,11 @@ read_cards(List, Cards) :-
     card_name_to_card(CardName, Card),
     read_cards(SubList, SubCards),
     Cards = [Card | SubCards].
+
+get_hand_name(Player, FileName) :-
+    atom_codes(Player, PlayerName),
+    append("kartu_", PlayerName, FileNameNoTXT),
+    append(FileNameNoTXT, ".txt", FileName).
 
 read_file(Stream, Char, Chars) :-
     Char == end_of_file -> Chars = [];

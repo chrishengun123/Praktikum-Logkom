@@ -84,14 +84,12 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 playCard(I) :-
     \+ started -> fail;
     currentPlayer(Player),
-    atom_codes(Player, PlayerName),
-    append("kartu_", PlayerName, FileNameNoTXT),
-    append(FileNameNoTXT, ".txt", FileName),
     atom_codes(File, FileName),
     read_file(File, Cards),
     get_element(Cards, I, Card),
-    ();
     delete_at(Cards, I, NewCards),
+    read_file('discard.txt', SubDiscardPile),
+    [] = SubDiscardPile,
     write_file(File, NewCards),
     format("~w memainkan kartu: ~w.\n", [Player, Card]),
     turnOrder(Order),
