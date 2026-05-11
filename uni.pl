@@ -70,11 +70,13 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
     N1 is N - 1,
     splitDeck(Deck, N1, Hand, Rest).
 
-play_card :-
+mainkanKartu(X) :- play_card(X).
+
+playCard(X) :-
     \+ started -> fail;
-    read_file('kartu_13525065.txt', Cards),
-    pop_random_card(Cards, NewCards, Card),
-    write_file('kartu_13525065.txt', NewCards),
+    read_file('kartu.txt', Cards),
+    pop_card(Cards, I, NewCards),
+    write_file('kartu.txt', NewCards),
     format("Angka ~w dimainkan!\n", [Card]),
     NewCards == [] -> format("Selamat! Kamu menghabiskan semua kartumu. Kamu menang!!!\n", []);
     true.
