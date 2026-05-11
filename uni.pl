@@ -90,8 +90,7 @@ cardEffect([_, Type]) :-
         get_index(Order, Player, Turn),
         NextTurn is Turn+1,
         get_element(Order, NextTurn, NextPlayer),
-        retract(currentPlayer(Player)),
-        assert(currentPlayer(NextPlayer))
+        switchPlayer(Player, NextPlayer)
     ).
 
 % Plays the card at index I.
@@ -118,8 +117,7 @@ playCard(I) :-
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
-        retract(currentPlayer(Player)),
-        asserta(currentPlayer(NextPlayer)),
+        switchPlayer(Player, NextPlayer),
         cardEffect(Card)
     );
         format("kartu ~w-~w tidak bisa dimainkan", Card)
