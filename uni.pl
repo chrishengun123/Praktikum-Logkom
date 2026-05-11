@@ -76,13 +76,14 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 
 playCard(X) :-
     \+ started -> fail;
+    get_index(Order, Player, Turn),
+    append(karty_, Player, List1AndList2),
     read_file('kartu.txt', Cards),
     pop_card(Cards, I, NewCards, Card),
     write_file('kartu.txt', NewCards),
     currentPlayer(Player),
     format("~w memainkan kartu: ~w.\n", [Player, Card]),
     turnOrder(Order),
-    get_index(Order, Player, Turn),
     get_length(Order, PlayerAmount),
     NextTurn is (Turn+1) mod PlayerAmount,
     get_element(Order, NextTurn, NextPlayer),
