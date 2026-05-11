@@ -79,6 +79,21 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
     N1 is N - 1,
     splitDeck(Deck, N1, Hand, Rest).
 
+switchPlayer(Player, NextPlayer) :- 
+    retract(currentPlayer(Player)),
+    assert(currentPlayer(NextPlayer)).
+
+cardEffect([_, Type]) :-
+    currentPlayer(Player),
+    turnOrder(Order),
+    ((Type == "skip") ->
+        get_index(Order, Player, Turn),
+        NextTurn is Turn+1,
+        get_element(Order, NextTurn, NextPlayer),
+        retract(currentPlayer(Player)),
+        assert(currentPlayer(NextPlayer))
+    ).
+
 % Plays the card at index I.
 % I:int
 playCard(I) :-
@@ -104,7 +119,8 @@ playCard(I) :-
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
         retract(currentPlayer(Player)),
-        asserta(currentPlayer(NextPlayer))
+        asserta(currentPlayer(NextPlayer)),
+        cardEffect(Card)
     );
         format("kartu ~w-~w tidak bisa dimainkan", Card)
     ).
