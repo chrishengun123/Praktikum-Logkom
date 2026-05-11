@@ -84,7 +84,7 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 playCard(I) :-
     \+ started -> fail;
     currentPlayer(Player),
-    get_hand_name(Player, FileName),
+    get_hand_file(Player, FileName),
     read_file(File, Cards),
     get_element(Cards, I, Card),
     delete_at(Cards, I, NewCards),
