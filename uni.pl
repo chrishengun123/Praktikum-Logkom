@@ -84,7 +84,7 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 playCard(I) :-
     \+ started -> fail;
     currentPlayer(Player),
-    atom_codes(File, FileName),
+    get_hand_name(Player, FileName),
     read_file(File, Cards),
     get_element(Cards, I, Card),
     delete_at(Cards, I, NewCards),

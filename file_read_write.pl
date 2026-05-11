@@ -26,10 +26,11 @@ read_cards(List, Cards) :-
     read_cards(SubList, SubCards),
     Cards = [Card | SubCards].
 
-get_hand_name(Player, FileName) :-
+get_hand_file(Player, File) :-
     atom_codes(Player, PlayerName),
     append("kartu_", PlayerName, FileNameNoTXT),
-    append(FileNameNoTXT, ".txt", FileName).
+    append(FileNameNoTXT, ".txt", FileName),
+    atom_codes(File, FileName).
 
 read_file(Stream, Char, Chars) :-
     Char == end_of_file -> Chars = [];
