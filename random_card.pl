@@ -2,6 +2,14 @@ get_element(List, Index, Element) :-
     (Index == 0,!, [Element|_] = List);
     (SubIndex is Index-1, [_|SubList] = List, get_element(SubList, SubIndex, Element)).
 
+get_index(List, Element, Index) :-
+    ([Element|_] = List,!, Index == 0);
+    [_|Sublist] = List,
+    (
+    (SubList = [],!, Index == -1);
+    (get_index(SubList, Element, SubIndex), Index is Subindex+1)
+    ).
+
 delete_at(List, Index, NewList) :-
     (Index == 0,!, [_|NewList] = List);
     (SubIndex is Index-1, [Element|SubList] = List, delete_at(SubList, SubIndex, NewSubList), NewList = [Element|NewSubList]).
