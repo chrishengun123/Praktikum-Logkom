@@ -1,5 +1,7 @@
 :- initialization([random_card, file_read_write]).
 :- dynamic(started/0).
+:- dynamic(currentPlayer/1).
+:- dynamic(turnOrder/1)
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -21,7 +23,9 @@ startGame :-
     write_file('discard.txt', [Discard]),
     format("\nKartu discard top: ~w\n", [Discard]),
     format("\nGiliran ~w", [First]),
-    asserta(started).
+    asserta(started),
+    asserta(currentPlayer(First)),
+    asserta(turnOrder([First | Rest])).
 
 validify(PlayerNum, ValidNum) :-
     (PlayerNum > 4 ; PlayerNum < 2)
