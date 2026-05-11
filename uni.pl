@@ -115,6 +115,17 @@ cardEffect([_, Type]) :-
         read_file('discard.txt', [_|SubDiscardPile]),
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
+    ((Type == "wild_draw_4") ->
+        ambilKartu, ambilKartu, ambilKartu, ambilKartu,
+        format("Pilih warna:\n"),
+        read(NewColor),
+        read_file('discard.txt', [_|SubDiscardPile]),
+        write_file('discard.txt', [[NewColor|Type]|SubDiscardPile]),
+        get_index(Order, Player, Turn),
+        NextTurn is (Turn+1) mod PlayerAmount,
+        get_element(Order, NextTurn, NextPlayer),
+        switchPlayer(Player, NextPlayer)
+    );
     true.
 
 % Plays the card at index I.
