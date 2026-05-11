@@ -109,6 +109,12 @@ cardEffect([_, Type]) :-
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer)
     );
+    ((Type == "wild") ->
+    format("Pilih warna:\n"),
+    read(NewColor),
+    read_file('discard.txt', [_|SubDiscardPile]),
+    write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
+    );
     true.
 
 % Plays the card at index I.
