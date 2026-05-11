@@ -1,4 +1,7 @@
-card_name_to_card([Char | SubCard], [Color,Type]).
+card_name_to_card([Char | SubCard], [Color,Type]) :- 
+    (Char == "-" -> Color = [], Type = SubCard);
+    card_name_to_card(SubCard, [SubColor,Type]),
+    Color = [Char | SubColor].
 
 card_to_card_name().
 
