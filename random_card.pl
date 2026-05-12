@@ -3,10 +3,10 @@ get_element(List, Index, Element) :-
     (SubIndex is Index-1, [_|SubList] = List, get_element(SubList, SubIndex, Element)).
 
 get_index(List, Element, Index) :-
-    ([Element|_] = List,!, Index == 0);
+    ([Element|_] = List,!, Index is 0);
     [_|SubList] = List,
     (
-    (SubList = [],!, Index == -1);
+    (SubList = [],!, Index is -1);
     (get_index(SubList, Element, SubIndex), Index is SubIndex+1)
     ).
 
