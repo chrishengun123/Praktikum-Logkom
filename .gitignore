@@ -1,2 +1,5 @@
 *.txt
 !pool.txt
+!cards.txt
+!discard.txt
+!unused_cards.txt
