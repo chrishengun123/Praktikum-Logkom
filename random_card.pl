@@ -4,10 +4,10 @@ get_element(List, Index, Element) :-
 
 get_index(List, Element, Index) :-
     ([Element|_] = List,!, Index == 0);
-    [_|Sublist] = List,
+    [_|SubList] = List,
     (
     (SubList = [],!, Index == -1);
-    (get_index(SubList, Element, SubIndex), Index is Subindex+1)
+    (get_index(SubList, Element, SubIndex), Index is SubIndex+1)
     ).
 
 delete_at(List, Index, NewList) :-
