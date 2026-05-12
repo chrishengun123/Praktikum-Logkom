@@ -1,4 +1,4 @@
-:- initialization([random_card, file_read_write]).
+:- initialization([random_card, file_read_write, lihat_kartu]).
 % True when the game has started.
 :- dynamic(started/0).
 % The current player.
