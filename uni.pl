@@ -12,22 +12,32 @@ startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
     format("\nMasukkan jumlah pemain: ", []),
     read(PlayerNum),
+    % Validify input of PlayerNum
     validify(PlayerNum, ValidNum),
     format("\n", []),
+    % Inputs each player and validifies it at the same time
     initPlayer(1, ValidNum, [], Players),
+    % Generate a sample deck w/o real cards
     generate_deck(1, 40, Deck),
+    % Shuffles deck (works with lists)
     shuffle(Deck, ShuffledDeck),
+    % Generate each players' decks
     create_player_files(Players),
     format("\nUrutan pemain: ", []),
+    % Pseudorandom (?) shuffle player turn order
     shuffle(Players, [First | Rest]),
+    % Prints the order with the format Name - Name - Name - Name
     printOrder([First | Rest]),
     format("\n", []),
     format("\nSetiap pemain mendapatkan 7 kartu acak.\n", []),
+    % Deals cards from the shuffled deck to each player
     dealCards(ShuffledDeck, Players, [Discard | Unused]),
+    % Remaining cards get put into unused and the first one is for the discard pile
     write_file('unused_cards.txt', Unused),
     write_file('discard.txt', [Discard]),
     format("\nKartu discard top: ~w\n", [Discard]),
     format("\nGiliran ~w", [First]),
+    % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
     asserta(started),
     asserta(currentPlayer(First)),
     asserta(turnOrder([First | Rest])).
@@ -170,6 +180,12 @@ display_status :-
     format("Banyak Kartu di Tangan: \n", []), write(Length),
     format("Kartumu: ~w\n", [Cards]).
 
+% Unfinished lihatCommand
+/* TODO: Implement each case,
+ * when previous is wild,
+ * when previous is [color],
+ * when previous is [type]
+ * */
 lihatCommand :-
     format("\nAksi utama yang tersedia:\n", []),
     format("1. ambilKartu\n2. tantang\n", []),
