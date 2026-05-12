@@ -11,7 +11,7 @@ card_name_to_card(CardName, [Color, Type]) :-
 
 % Returns the first card name in the list and removes it from the list.
 read_card([Char | SubList], NewList, CardName) :-
-    ((Char == ",") -> CardName = [], NewList = SubList);
+    ((Char == ","; Char == "]") -> CardName = [], NewList = SubList);
     read_card(SubList, NewList, SubCardName),
     (
         ((Char == "[") -> CardName = SubCardName);
