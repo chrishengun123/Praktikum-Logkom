@@ -7,7 +7,7 @@ lihatKartu :-
 %    format("~w", [Cardfile]), for debug purposes
     read_file(Cardfile, Cards),
     get_length(Cards, Length),
-    format("Berikut kartu yang Anda miliki: ~n", []),
+    format("~nBerikut kartu yang Anda miliki: ~n", []),
     printCards(1, Length, Cards).
 
 
