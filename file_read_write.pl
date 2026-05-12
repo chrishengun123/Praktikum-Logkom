@@ -1,20 +1,25 @@
 get_color_and_type_string([Char | SubCard], [Color, Type]) :- 
-    (Char == "-" -> Color = [], Type = SubCard);
-    card_name_to_card(SubCard, [SubColor, Type]),
+    (Char == ('-') -> Color = [], Type = SubCard);
+    get_color_and_type_string(SubCard, [SubColor, Type]),
     Color = [Char | SubColor].
+
+list_to_atom([], '').
+list_to_atom([H|T], Atom) :-
+    list_to_atom(T, TailAtom),
+    atom_concat(H, TailAtom, Atom).
 
 % Converts the card name to usable card data.
 card_name_to_card(CardName, [Color, Type]) :- 
-    get_color_and_type_string(CardName, [Color,Type]).
-    % atom_codes(Color, ColorStr),
-    % atom_codes(Type, TypeStr).
+    get_color_and_type_string(CardName, [ColorList,TypeList]),
+    list_to_atom(ColorList, Color),
+    list_to_atom(TypeList, Type).
 
 % Returns the first card name in the list and removes it from the list.
 read_card([Char | SubList], NewList, CardName) :-
-    ((Char == ","; Char == "]") -> CardName = [], NewList = SubList);
+    ((Char == (','); Char == (']')) -> CardName = [], NewList = SubList);
     read_card(SubList, NewList, SubCardName),
     (
-        ((Char == "[") -> CardName = SubCardName);
+        ((Char == ('[')) -> CardName = SubCardName);
         CardName = [Char | SubCardName]
     ).
 
