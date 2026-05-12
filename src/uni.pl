@@ -7,6 +7,8 @@
 % The order of players.
 % turnOrder(Order), Order:list = [Player|_], Player:atom
 :- dynamic(turnOrder/1).
+% Check if ambilKartu is called directly
+:- dynamic(calledDirectly/0).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -127,7 +129,7 @@ cardEffect([_, Type]) :-
         switchPlayer(Player, NextPlayer)
     );
     ((Type == 'draw_two') ->
-        ambilKartu, ambilKartu,
+        ambilKartuInternal, ambilKartuInternal,
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
@@ -140,7 +142,7 @@ cardEffect([_, Type]) :-
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
     ((Type == 'wild_draw_four') ->
-        ambilKartu, ambilKartu, ambilKartu, ambilKartu,
+        ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,
         format("Pilih warna:\n", []),
         read(NewColor),
         read_file('discard.txt', [_|SubDiscardPile]),
@@ -200,27 +202,41 @@ display_status :-
     format("Banyak Kartu di Tangan: \n", []), write(Length),
     format("Kartumu: ~w\n", [Cards]).
 
+% Unfinished lihatCommand
+/* TODO: Implement each case,
+ * when previous is wild,
+ * when previous is [color],
+ * when previous is [type]
+ * */
 lihatCommand :-
     format("\nAksi utama yang tersedia:\n", []),
-    read_file('discard.txt', DiscardPile),
-    [[LastColor, LastType] | _] = DiscardPile,
-    currentPlayer(CurrentPlayer),
-    get_hand_file(CurrentPlayer, FileName),
-    read_file(FileName, PlayerCards),
-    (LastType == 'wild_draw_four' -> format("1. ambilKartu\n2. tantang", []); true),
-    (LastType == 'draw_2' -> format("1. ambilKartu", []); true),
-    ((hasColor(PlayerCards, LastColor) ; hasType(PlayerCards, LastType)) -> format("1. mainkanKartu", []) ; format("1. ambilKartu", [])),
-    format("\n", []),
+    format("1. ambilKartu\n2. tantang\n", []),
     format("\nAksi pendukung yang tersedia:\n", []),
     format("1. lihatCommand\n2. lihatKartu\n3. cekInfo\n", []).
 
-hasColor([[Color , _] | _], Color) :- !.
-hasColor([_ | Rest], Color) :-
-  hasColor(Rest, Color).
+ambilKartuInternal :-
+    asserta(calledDirectly),
+    ambilKartu,
+    retract(calledDirectly).
 
-hasType([[_ , Type] | _], Type) :- !.
-hasType([_ | Rest], Type) :-
-  hasType(Rest, Type).
+ambilKartu :-
+    currentPlayer(Player),
+    get_hand_file(Player, File),
+    read_file(File, Cards),
+    read_file('unused_cards.txt', Draw),
+    splitDeck(Draw, 1, DrawnCard, RestDeck),
+    % still overwrites the player hands
+    write_file(File, DrawnCard), 
+    write_file('unused_cards.txt', RestDeck),
+    (calledDirectly -> true ;
+        turnOrder(Order),
+        get_length(Order, PlayerAmount),
+        get_index(Order, Player, Turn),
+        NextTurn is (Turn+1) mod PlayerAmount,
+        get_element(Order, NextTurn, NextPlayer),
+        switchPlayer(Player, NextPlayer)
+    ).
+
 
 cekInfo :- 
     read_file('discard.txt', Discard),
