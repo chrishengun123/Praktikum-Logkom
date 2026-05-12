@@ -1,1 +1,1 @@
-[]
+[merah-0,merah-1,merah-2,merah-3,merah-4,merah-5,merah-6,merah-7,merah-8,merah-9,merah-skip,merah-reverse,merah-draw_2,kuning-0,kuning-1,kuning-2,kuning-3,kuning-4,kuning-5,kuning-6,kuning-7,kuning-8,kuning-9,kuning-skip,kuning-reverse,kuning-draw_2,hijau-0,hijau-1,hijau-2,hijau-3,hijau-4,hijau-5,hijau-6,hijau-7,hijau-8,hijau-9,hijau-skip,hijau-reverse,hijau-draw_2,biru-0,biru-1,biru-2,biru-3,biru-4,biru-5,biru-6,biru-7,biru-8,biru-9,biru-skip,biru-reverse,biru-draw_2,black-wild,black-wild_draw_four]
