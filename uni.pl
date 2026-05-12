@@ -112,7 +112,7 @@ cardEffect([_, Type]) :-
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer)
     );
-    ((Type == "draw_2") ->
+    ((Type == "draw_two") ->
         ambilKartu, ambilKartu,
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
@@ -125,7 +125,7 @@ cardEffect([_, Type]) :-
         read_file('discard.txt', [_|SubDiscardPile]),
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
-    ((Type == "wild_draw_4") ->
+    ((Type == "wild_draw_four") ->
         ambilKartu, ambilKartu, ambilKartu, ambilKartu,
         format("Pilih warna:\n"),
         read(NewColor),
@@ -151,10 +151,12 @@ playCard(I) :-
     [LastCard|_] = SubDiscardPile,
     [LastColor, LastType] = LastCard,
     (
-    (((SubDiscardPile == []; Color == "black"; LastColor = "black";
+    (((SubDiscardPile == []; Color == "black";
     Color == LastColor; Type == LastType),
     \+ (Type == "wild", LastType == "wild"),
-    \+ (Type == "wild_draw_4", LastType == "wild_draw_4")) ->
+    \+ (Type == "wild_draw_four", LastType == "wild_draw_four"),
+    \+ (Type == "wild", LastType == "wild_draw_four")),
+    \+ (Type == "wild_draw_four", LastType == "wild") ->
         delete_at(Cards, I, NewCards),
         DiscardPile = [Card | SubDiscardPile],
         write_file(File, NewCards),
