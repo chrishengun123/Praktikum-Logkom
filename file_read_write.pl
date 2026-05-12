@@ -54,7 +54,7 @@ write_file(File, Input) :-
     (Input == []);
     Input = [Card | SubInput],
     open(File, write, Stream),
-    format(Stream, "~w-~w", [Card]),
+    format(Stream, "~w-~w,", [Card]),
     close(Stream),
     write_file(File, SubInput).
 
