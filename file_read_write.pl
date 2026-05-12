@@ -50,11 +50,11 @@ read_file(File, Output) :-
     read_cards(Data, Output),
     close(Stream).
 
+write_file(_, []) :- !.
 write_file(File, Input) :-
-    (Input == []);
     Input = [Card | SubInput],
     open(File, write, Stream),
-    format(Stream, "~w-~w,", [Card]),
+    format(Stream, "~w-~w,", Card),
     close(Stream),
     write_file(File, SubInput).
 
@@ -64,6 +64,3 @@ create_player_files([Name | Rest]) :-
    atom_concat(Temp, '.txt', FileName),
    write_file(FileName, []),
    create_player_files(Rest).
-
-read_pool(File, ListPool) :-
-   read_file(File, ListPool).

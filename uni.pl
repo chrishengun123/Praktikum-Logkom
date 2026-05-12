@@ -18,7 +18,7 @@ startGame :-
     % Inputs each player and validifies it at the same time
     initPlayer(1, ValidNum, [], Players),
     % Read deck from pool.txt
-    generate_deck('pool.txt', Deck),
+    read_file('pool.txt', Deck),
     % Shuffles deck (works with lists)
     shuffle(Deck, ShuffledDeck),
     % Generate each players' decks
@@ -31,11 +31,12 @@ startGame :-
     format("\n", []),
     format("\nSetiap pemain mendapatkan 7 kartu acak.\n", []),
     % Deals cards from the shuffled deck to each player
-    dealCards(ShuffledDeck, Players, [Discard | Unused]),
+    dealCards(ShuffledDeck, Players, Remaining),
+    findStartingDiscard(Remaining, Discard, Unused),
     % Remaining cards get put into unused and the first one is for the discard pile
     write_file('unused_cards.txt', Unused),
     write_file('discard.txt', [Discard]),
-    format("\nKartu discard top: ~w\n", [Discard]),
+    format("\nKartu discard top: ~w-~w\n", Discard),
     format("\nGiliran ~w", [First]),
     % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
     asserta(started),
@@ -84,14 +85,18 @@ dealHands(Deck, [Name|Rest], HandSize, Remaining) :-
     write_file(FileName, Hand),
     dealHands(RestDeck, Rest, HandSize, Remaining).
 
-generate_deck(N, [N]) :- !.
-generate_deck(InputFile, Deck) :-
-    read_file(InputFile, Deck).
-
 splitDeck(Rest, 0, [], Rest) :- !.
 splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
     N1 is N - 1,
     splitDeck(Deck, N1, Hand, Rest).
+
+isNumCard([_, Type]) :-
+    member(Type, ['0','1','2','3','4','5','6','7','8','9']).
+
+findStartingDiscard([Card | Rest], Card, Rest) :- 
+    isNumCard(Card), !.
+findStartingDiscard([Card | Rest], Discard, [Card | Unused]) :-
+    findStartingDiscard(Rest, Discard, Unused).
 
 switchPlayer(Player, NextPlayer) :- 
     retract(currentPlayer(Player)),
@@ -124,14 +129,14 @@ cardEffect([_, Type]) :-
         switchPlayer(Player, NextPlayer)
     );
     ((Type == 'wild') ->
-        format("Pilih warna:\n"),
+        format("Pilih warna:\n", []),
         read(NewColor),
         read_file('discard.txt', [_|SubDiscardPile]),
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
     ((Type == 'wild_draw_four') ->
         ambilKartu, ambilKartu, ambilKartu, ambilKartu,
-        format("Pilih warna:\n"),
+        format("Pilih warna:\n", []),
         read(NewColor),
         read_file('discard.txt', [_|SubDiscardPile]),
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile]),
