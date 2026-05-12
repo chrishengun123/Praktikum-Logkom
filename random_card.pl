@@ -35,8 +35,3 @@ shuffle(List, [Elem | Shuffled]) :-
     get_element(List, Index, Elem),
     delete_at(List, Index, Rest),
     shuffle(Rest, Shuffled).
-
-generate_deck(N, N, [N]) :- !.
-generate_deck(Current, Max, [Current | Rest]) :-
-    Next is Current + 1,
-    generate_deck(Next, Max, Rest).

@@ -17,8 +17,8 @@ startGame :-
     format("\n", []),
     % Inputs each player and validifies it at the same time
     initPlayer(1, ValidNum, [], Players),
-    % Generate a sample deck w/o real cards
-    generate_deck(1, 40, Deck),
+    % Read deck from pool.txt
+    generate_deck('pool.txt', Deck),
     % Shuffles deck (works with lists)
     shuffle(Deck, ShuffledDeck),
     % Generate each players' decks
@@ -83,6 +83,10 @@ dealHands(Deck, [Name|Rest], HandSize, Remaining) :-
     atom_concat(Temp, '.txt', FileName),
     write_file(FileName, Hand),
     dealHands(RestDeck, Rest, HandSize, Remaining).
+
+generate_deck(N, [N]) :- !.
+generate_deck(InputFile, Deck) :-
+    read_file(InputFile, Deck).
 
 splitDeck(Rest, 0, [], Rest) :- !.
 splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
