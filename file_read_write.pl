@@ -52,13 +52,20 @@ read_file(File, Output) :-
 
 write_file(File, Input) :-
     open(File, write, Stream),
+    format(Stream, "[", []),
     write_cards(Stream, Input),
+    format(Stream, "]", []),
     close(Stream).
 
 write_cards(_, []).
 write_cards(Stream, [Card | Rest]) :-
-    format(Stream, "~w-~w,", Card),
-    write_cards(Stream, Rest).
+    format(Stream, "~w-~w", Card),
+    write_cards_rest(Stream, Rest).
+
+write_cards_rest(_, []).
+write_cards_rest(Stream, [Card | Rest]) :-
+    format(Stream, ",~w-~w", Card),
+    write_cards_rest(Stream, Rest).
 
 create_player_files([]).
 create_player_files([Name | Rest]) :-
