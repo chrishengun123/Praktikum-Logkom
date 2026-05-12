@@ -34,7 +34,6 @@ get_hand_file(Player, File) :-
 
 read_file(Stream, Char, Chars) :-
     Char == end_of_file -> Chars = [];
-    atom_codes(Char, StrChar),
     Chars = [Char | Rest],
     get_char(Stream, Next),
     read_file(Stream, Next, Rest).
