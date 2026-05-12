@@ -200,20 +200,27 @@ display_status :-
     format("Banyak Kartu di Tangan: \n", []), write(Length),
     format("Kartumu: ~w\n", [Cards]).
 
-% Unfinished lihatCommand
-/* TODO: Implement each case,
- * when previous is wild,
- * when previous is [color],
- * when previous is [type]
- * */
 lihatCommand :-
     format("\nAksi utama yang tersedia:\n", []),
-    format("1. ambilKartu\n2. tantang\n", []),
+    read_file('discard.txt', DiscardPile),
+    [[LastColor, LastType] | _] = DiscardPile,
+    currentPlayer(CurrentPlayer),
+    get_hand_file(CurrentPlayer, FileName),
+    read_file(FileName, PlayerCards),
+    (LastType == 'wild_draw_four' -> format("1. ambilKartu\n2. tantang", []); true),
+    (LastType == 'draw_2' -> format("1. ambilKartu", []); true),
+    ((hasColor(PlayerCards, LastColor) ; hasType(PlayerCards, LastType)) -> format("1. mainkanKartu", []) ; format("1. ambilKartu", [])),
+    format("\n", []),
     format("\nAksi pendukung yang tersedia:\n", []),
     format("1. lihatCommand\n2. lihatKartu\n3. cekInfo\n", []).
 
+hasColor([[Color , _] | _], Color) :- !.
+hasColor([_ | Rest], Color) :-
+  hasColor(Rest, Color).
 
-
+hasType([[_ , Type] | _], Type) :- !.
+hasType([_ | Rest], Type) :-
+  hasType(Rest, Type).
 
 cekInfo :- 
     read_file('discard.txt', Discard),
