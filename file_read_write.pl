@@ -47,9 +47,12 @@ read_file(File, Output) :-
     close(Stream).
 
 write_file(File, Input) :-
+    (Input == []);
+    [Card | SubInput] = Input.
     open(File, write, Stream),
-    format(Stream, "~w", [Input]),
-    close(Stream).
+    format(Stream, "~w-~w", [Card]),
+    close(Stream),
+    write_file(File, SubInput).
 
 create_player_files([]).
 create_player_files([Name | Rest]) :-
