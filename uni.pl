@@ -21,7 +21,7 @@ startGame :-
     read_file('pool.txt', Deck),
     % Shuffles deck (works with lists)
     shuffle(Deck, ShuffledDeck),
-    % Generate each players' decks
+    % Generate each players decks
     create_player_files(Players),
     format("\nUrutan pemain: ", []),
     % Pseudorandom (?) shuffle player turn order
@@ -73,6 +73,11 @@ printOrder([Player | Rest]) :-
     format("~w - ", [Player]),
     printOrder(Rest).
 
+printCard([Num]) :- isNumCard(Num), format("~w",[Num]), !.
+printCard([Name | Rest]) :- 
+    \+ isNumCard(Name), format("~w-",[Name]), 
+    printCard(Rest).
+
 dealCards(Deck, Players, Unused) :-
     Handsize is 7,
     dealHands(Deck, Players, Handsize, Unused).
@@ -100,7 +105,7 @@ findStartingDiscard([Card | Rest], Discard, [Card | Unused]) :-
 
 switchPlayer(Player, NextPlayer) :- 
     retract(currentPlayer(Player)),
-    assert(currentPlayer(NextPlayer)).
+    asserta(currentPlayer(NextPlayer)).
 
 cardEffect([_, Type]) :-
     currentPlayer(Player),
@@ -115,7 +120,7 @@ cardEffect([_, Type]) :-
     ((Type == 'reverse') ->
         reverse(Order, NewOrder),
         retract(turnOrder(Order)),
-        assert(turnOrder(NewOrder)),
+        asserta(turnOrder(NewOrder)),
         get_index(Order, Player, Turn),
         NextTurn is Turn+2 mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
@@ -170,7 +175,8 @@ playCard(I) :-
         DiscardPile = [Card | SubDiscardPile],
         write_file(File, NewCards),
         write_file('discard.txt', DiscardPile),
-        format("~w memainkan kartu: ~w.\n", [Player, Card]),
+        format("~w memainkan kartu: ", [Player]),
+        format("~w-~w.\n", Card),
         turnOrder(Order),
         get_length(Order, PlayerAmount),
         get_index(Order, Player, Turn),
@@ -183,6 +189,9 @@ playCard(I) :-
     ).
 
 mainkanKartu(I) :- playCard(I).
+
+
+
 
 display_status :-
     \+ started -> fail;
@@ -202,6 +211,94 @@ lihatCommand :-
     format("1. ambilKartu\n2. tantang\n", []),
     format("\nAksi pendukung yang tersedia:\n", []),
     format("1. lihatCommand\n2. lihatKartu\n3. cekInfo\n", []).
+
+
+
+
+cekInfo :- 
+    read_file('discard.txt', Discard),
+    get_element(Discard,0,Top), 
+    [Color, Type] = Top,
+    format("Kartu discard top: ~w-~w.\n", Top),
+    turnOrder(Order),
+    format("Urutan pemain: ",[]),
+    printOrder(Order),
+    format(".\n",[]),
+    get_length(Order, PlayerAmount),
+    printPlayersInfo(PlayerAmount).
+
+printPlayersInfo(2) :-
+    turnOrder(Order), PlayerAmount = 2,
+    currentPlayer(FirstPlayer),
+    format("Nama pemain 1: ~w\n", [FirstPlayer]),
+    get_hand_file(FirstPlayer, FirstFile),
+    read_file(FirstFile, FirstCards),
+    get_length(FirstCards, FirstLength),
+    format("Jumlah kartu : ~w\n", [FirstLength]),
+    get_index(Order, FirstPlayer, FirstTurn),
+    SecondTurn is (FirstTurn+1) mod PlayerAmount,
+    get_element(Order, SecondTurn, SecondPlayer), 
+    format("Nama pemain 2: ~w\n", [SecondPlayer]),
+    get_hand_file(SecondPlayer, SecondFile),
+    read_file(SecondFile, SecondCards),
+    get_length(SecondCards, SecondLength),
+    format("Jumlah kartu : ~w\n", [SecondLength]).
+printPlayersInfo(3) :-
+    turnOrder(Order), PlayerAmount = 3,
+    currentPlayer(FirstPlayer),
+    format("Nama pemain 1: ~w\n", [FirstPlayer]),
+    get_hand_file(FirstPlayer, FirstFile),
+    read_file(FirstFile, FirstCards),
+    get_length(FirstCards, FirstLength),
+    format("Jumlah kartu : ~w\n", [FirstLength]),
+    get_index(Order, FirstPlayer, TurnOne),
+    SecondTurn is (TurnOne+1) mod PlayerAmount,
+    get_element(Order, SecondTurn, SecondPlayer), 
+    format("Nama pemain 2: ~w\n", [SecondPlayer]),
+    get_hand_file(SecondPlayer, SecondFile),
+    read_file(SecondFile, SecondCards),
+    get_length(SecondCards, SecondLength),
+    format("Jumlah kartu : ~w\n", [SecondLength]),
+    get_index(Order, SecondPlayer, TurnTwo),
+    ThirdTurn is (TurnTwo+1) mod PlayerAmount,
+    get_element(Order, ThirdTurn, ThirdPlayer), 
+    format("Nama pemain 3: ~w\n", [ThirdPlayer]),
+    get_hand_file(ThirdPlayer, ThirdFile),
+    read_file(ThirdFile, ThirdCards),
+    get_length(ThirdCards, ThirdLength),
+    format("Jumlah kartu : ~w\n", [ThirdLength]).
+printPlayersInfo(4) :-
+    turnOrder(Order), PlayerAmount = 4,
+    currentPlayer(FirstPlayer),
+    format("Nama pemain 1: ~w\n", [FirstPlayer]),
+    get_hand_file(FirstPlayer, FirstFile),
+    read_file(FirstFile, FirstCards),
+    get_length(FirstCards, FirstLength),
+    format("Jumlah kartu : ~w\n", [FirstLength]),
+    get_index(Order, FirstPlayer, TurnOne),
+    SecondTurn is (TurnOne+1) mod PlayerAmount,
+    get_element(Order, SecondTurn, SecondPlayer), 
+    format("Nama pemain 2: ~w\n", [SecondPlayer]),
+    get_hand_file(SecondPlayer, SecondFile),
+    read_file(SecondFile, SecondCards),
+    get_length(SecondCards, SecondLength),
+    format("Jumlah kartu : ~w\n", [SecondLength]),
+    get_index(Order, SecondPlayer, TurnTwo),
+    ThirdTurn is (TurnTwo+1) mod PlayerAmount,
+    get_element(Order, ThirdTurn, ThirdPlayer), 
+    format("Nama pemain 3: ~w\n", [ThirdPlayer]),
+    get_hand_file(ThirdPlayer, ThirdFile),
+    read_file(ThirdFile, ThirdCards),
+    get_length(ThirdCards, ThirdLength),
+    format("Jumlah kartu : ~w\n", [ThirdLength]),
+    get_index(Order, ThirdPlayer, TurnThree),
+    FourthTurn is (TurnThree+1) mod PlayerAmount,
+    get_element(Order, FourthTurn, FourthPlayer), 
+    format("Nama pemain 4: ~w\n", [FourthPlayer]),
+    get_hand_file(FourthPlayer, FourthFile),
+    read_file(FourthFile, FourthCards),
+    get_length(FourthCards, FourthLength),
+    format("Jumlah kartu : ~w\n", [FourthLength]).
 
 save :- true.
 load :- true.
