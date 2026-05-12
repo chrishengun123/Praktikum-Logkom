@@ -14,6 +14,7 @@ delete_at(List, Index, NewList) :-
     (Index == 0,!, [_|NewList] = List);
     (SubIndex is Index-1, [Element|SubList] = List, delete_at(SubList, SubIndex, NewSubList), NewList = [Element|NewSubList]).
 
+get_length([], 0) :- !.
 get_length([_|Sub], Length) :- 
     (Sub == [],!, Length is 1);
     (get_length(Sub, SubLength), Length is SubLength+1).
