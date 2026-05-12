@@ -47,7 +47,7 @@ read_file(File, Output) :-
 
 write_file(File, Input) :-
     (Input == []);
-    [Card | SubInput] = Input.
+    Input = [Card | SubInput].
     open(File, write, Stream),
     format(Stream, "~w-~w", [Card]),
     close(Stream),
