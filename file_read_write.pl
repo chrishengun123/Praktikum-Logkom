@@ -50,13 +50,15 @@ read_file(File, Output) :-
     read_cards(Data, Output),
     close(Stream).
 
-write_file(_, []) :- !.
 write_file(File, Input) :-
-    Input = [Card | SubInput],
     open(File, write, Stream),
+    write_cards(Stream, Input),
+    close(Stream).
+
+write_cards(_, []).
+write_cards(Stream, [Card | Rest]) :-
     format(Stream, "~w-~w,", Card),
-    close(Stream),
-    write_file(File, SubInput).
+    write_cards(Stream, Rest).
 
 create_player_files([]).
 create_player_files([Name | Rest]) :-

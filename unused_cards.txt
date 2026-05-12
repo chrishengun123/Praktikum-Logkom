@@ -1,1 +1,1 @@
-biru-2,
+hijau-8,biru-8,merah-7,kuning-0,merah-5,merah-skip,hijau-4,merah-9,merah-3,kuning-3,biru-skip,merah-0,kuning-2,merah-reverse,hijau-1,hijau-skip,biru-5,merah-2,hijau-5,merah-1,kuning-reverse,hijau-2,hijau-0,kuning-7,kuning-6,black-wild_draw_four,hijau-draw_2,kuning-4,kuning-8,biru-0,biru-1,hijau-9,
