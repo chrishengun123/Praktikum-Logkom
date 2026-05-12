@@ -11,9 +11,9 @@ lihatKartu :-
     printCards(1, Length, Cards).
 
 
-printCards(Index, Length, _) :- Index = Length + 1, format("~n", []).
+printCards(_, _, []) :- !.
 printCards(Index, Length, [Card | Rest]) :-
     Index =< Length,
     Index1 is Index + 1,
-    format("~d. ~w-~w~n", [Index, Card]),
+    format("~d. ~w-~w~n", [Index | Card]),
     printCards(Index1, Length, Rest).
