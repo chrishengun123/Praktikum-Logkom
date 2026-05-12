@@ -129,7 +129,7 @@ cardEffect([_, Type]) :-
         switchPlayer(Player, NextPlayer)
     );
     ((Type == 'draw_two') ->
-        ambilKartuInternal, ambilKartuInternal,
+        ambilKartu, ambilKartu,
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
@@ -142,7 +142,7 @@ cardEffect([_, Type]) :-
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
     ((Type == 'wild_draw_four') ->
-        ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,
+        ambilKartu, ambilKartu, ambilKartu, ambilKartu,
         format("Pilih warna:\n", []),
         read(NewColor),
         read_file('discard.txt', [_|SubDiscardPile]),
@@ -193,27 +193,6 @@ playCard(I) :-
 mainkanKartu(I) :- playCard(I).
 
 
-
-
-display_status :-
-    \+ started -> fail;
-    read_file('kartu_13525065.txt', Cards),
-    get_length(Cards, Length),
-    format("Banyak Kartu di Tangan: \n", []), write(Length),
-    format("Kartumu: ~w\n", [Cards]).
-
-% Unfinished lihatCommand
-/* TODO: Implement each case,
- * when previous is wild,
- * when previous is [color],
- * when previous is [type]
- * */
-lihatCommand :-
-    format("\nAksi utama yang tersedia:\n", []),
-    format("1. ambilKartu\n2. tantang\n", []),
-    format("\nAksi pendukung yang tersedia:\n", []),
-    format("1. lihatCommand\n2. lihatKartu\n3. cekInfo\n", []).
-
 ambilKartuInternal :-
     asserta(calledDirectly),
     ambilKartu,
@@ -237,6 +216,36 @@ ambilKartu :-
         switchPlayer(Player, NextPlayer)
     ).
 
+
+
+display_status :-
+    \+ started -> fail;
+    read_file('kartu_13525065.txt', Cards),
+    get_length(Cards, Length),
+    format("Banyak Kartu di Tangan: \n", []), write(Length),
+    format("Kartumu: ~w\n", [Cards]).
+
+lihatCommand :-
+    format("\nAksi utama yang tersedia:\n", []),
+    read_file('discard.txt', DiscardPile),
+    [[LastColor, LastType] | _] = DiscardPile,
+    currentPlayer(CurrentPlayer),
+    get_hand_file(CurrentPlayer, FileName),
+    read_file(FileName, PlayerCards),
+    (LastType == 'wild_draw_four' -> format("1. ambilKartu\n2. tantang", []); true),
+    (LastType == 'draw_2' -> format("1. ambilKartu", []); true),
+    ((hasColor(PlayerCards, LastColor) ; hasType(PlayerCards, LastType)) -> format("1. mainkanKartu", []) ; format("1. ambilKartu", [])),
+    format("\n", []),
+    format("\nAksi pendukung yang tersedia:\n", []),
+    format("1. lihatCommand\n2. lihatKartu\n3. cekInfo\n", []).
+
+hasColor([[Color , _] | _], Color) :- !.
+hasColor([_ | Rest], Color) :-
+  hasColor(Rest, Color).
+
+hasType([[_ , Type] | _], Type) :- !.
+hasType([_ | Rest], Type) :-
+  hasType(Rest, Type).
 
 cekInfo :- 
     read_file('discard.txt', Discard),
