@@ -61,7 +61,7 @@ initPlayer(Index, PlayerNum, Taken, [Name | Rest]) :-
 
 readUniqueName(Taken, Name) :-
     read(InputName),
-    (member(InputName, Taken) ->
+    (ownMember(InputName, Taken) ->
       format("Nama sudah digunakan. Masukkan nama lain: ", []),
       readUniqueName(Taken, Name)
     ;
@@ -96,7 +96,7 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
     splitDeck(Deck, N1, Hand, Rest).
 
 isNumCard([_, Type]) :-
-    member(Type, ['0','1','2','3','4','5','6','7','8','9']).
+    ownMember(Type, ['0','1','2','3','4','5','6','7','8','9']).
 
 findStartingDiscard([Card | Rest], Card, Rest) :- 
     isNumCard(Card), !.
@@ -221,6 +221,10 @@ hasColor([_ | Rest], Color) :-
 hasType([[_ , Type] | _], Type) :- !.
 hasType([_ | Rest], Type) :-
   hasType(Rest, Type).
+
+ownMember(X, [X | _]).
+ownMember(X, [_ | Tail]) :-
+  ownMember(X, Tail).
 
 cekInfo :- 
     read_file('discard.txt', Discard),

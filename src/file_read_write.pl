@@ -33,8 +33,8 @@ read_cards(List, Cards) :-
 
 get_hand_file(Player, File) :-
     atom_codes(Player, PlayerName),
-    append("kartu_", PlayerName, FileNameNoTXT),
-    append(FileNameNoTXT, ".txt", FileName),
+    ownAppend("kartu_", PlayerName, FileNameNoTXT),
+    ownAppend(FileNameNoTXT, ".txt", FileName),
     atom_codes(File, FileName).
 
 read_file(Stream, Char, Chars) :-
@@ -73,3 +73,7 @@ create_player_files([Name | Rest]) :-
    atom_concat(Temp, '.txt', FileName),
    write_file(FileName, []),
    create_player_files(Rest).
+
+ownAppend([], Output, Output).
+ownAppend([Head | Tail], List, [Head | ResTail]) :-
+   ownAppend(Tail, List, ResTail).
