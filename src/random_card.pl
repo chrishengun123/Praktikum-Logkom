@@ -1,3 +1,5 @@
+:- initialization([file_read_write]).
+
 get_element(List, Index, Element) :-
     (Index == 0,!, [Element|_] = List);
     (SubIndex is Index-1, [_|SubList] = List, get_element(SubList, SubIndex, Element)).
@@ -36,3 +38,8 @@ shuffle(List, [Elem | Shuffled]) :-
     get_element(List, Index, Elem),
     delete_at(List, Index, Rest),
     shuffle(Rest, Shuffled).
+
+reverse_list([], []) :- !.
+reverse_list([Element | SubInput], Output) :-
+    reverse_list(SubInput, SubOutput),
+    ownAppend(SubOutput, [Element], Output).
