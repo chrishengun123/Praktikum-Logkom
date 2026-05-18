@@ -118,7 +118,7 @@ cardEffect([_, Type]) :-
         switchPlayer(Player, NextPlayer)
     );
     ((Type == 'reverse') ->
-        reverse(Order, NewOrder),
+        reverse_list(Order, NewOrder),
         retract(turnOrder(Order)),
         asserta(turnOrder(NewOrder)),
         get_index(Order, Player, Turn),
