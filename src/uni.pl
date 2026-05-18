@@ -7,6 +7,8 @@
 % The order of players.
 % turnOrder(Order), Order:list = [Player|_], Player:atom
 :- dynamic(turnOrder/1).
+% Check if ambilKartu is called directly
+:- dynamic(calledDirectly/0).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -127,7 +129,7 @@ cardEffect([_, Type]) :-
         switchPlayer(Player, NextPlayer)
     );
     ((Type == 'draw_two') ->
-        ambilKartu, ambilKartu,
+        ambilKartuInternal, ambilKartuInternal,
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
@@ -140,7 +142,7 @@ cardEffect([_, Type]) :-
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
     ((Type == 'wild_draw_four') ->
-        ambilKartu, ambilKartu, ambilKartu, ambilKartu,
+        ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,
         format("Pilih warna:\n", []),
         read(NewColor),
         read_file('discard.txt', [_|SubDiscardPile]),
@@ -190,8 +192,33 @@ playCard(I) :-
 
 mainkanKartu(I) :- playCard(I).
 
+ambilKartuInternal :-
+    asserta(calledDirectly),
+    ambilKartu,
+    retract(calledDirectly).
 
-
+ambilKartu :-
+    currentPlayer(Player),
+    get_hand_file(Player, File),
+    read_file(File, Hand),
+    read_file('unused_cards.txt', Draw),
+    splitDeck(Draw, 1, DrawnCard, RestDeck),
+    append_list(Hand,DrawnCard,Result),
+    write_file(File, Result), 
+    write_file('unused_cards.txt', RestDeck),
+    format("~w mendapatkan kartu: ",[Player]),
+    get_element(DrawnCard,0,Card),
+    [Color, Type] = Card,
+    format("~w-~w\n",Card),
+    (calledDirectly -> true ;
+        turnOrder(Order),
+        get_length(Order, PlayerAmount),
+        get_index(Order, Player, Turn),
+        NextTurn is (Turn+1) mod PlayerAmount,
+        get_element(Order, NextTurn, NextPlayer),
+        switchPlayer(Player, NextPlayer),
+        format("Giliran ~w.\n", [NextPlayer])
+    ), !.
 
 display_status :-
     \+ started -> fail;

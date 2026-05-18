@@ -43,3 +43,7 @@ reverse_list([], []) :- !.
 reverse_list([Element | SubInput], Output) :-
     reverse_list(SubInput, SubOutput),
     ownAppend(SubOutput, [Element], Output).
+
+append_list([],Second,Second) :- !.
+append_list([H | T], Second, Result) :-
+    append_list(T,Second,SubResult), Result = [H | SubResult].
