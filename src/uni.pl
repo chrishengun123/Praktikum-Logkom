@@ -9,6 +9,8 @@
 :- dynamic(turnOrder/1).
 % Check if ambilKartu is called directly
 :- dynamic(calledDirectly/0).
+% Check which player has stated UNI
+:- dynamic(stated_uni/1).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -192,6 +194,35 @@ playCard(I) :-
 
 mainkanKartu(I) :- playCard(I).
 
+uni(I) :- 
+    currentPlayer(Player),
+    get_hand_file(Player, File),
+    read_file(File, Hand),
+    get_length(Hand, Length),
+    ((Length =:= 2) ->
+        playCard(I),
+        format("~w menyerukan UNI!\n", [Player]),
+        asserta(stated_uni(Player))
+    ;
+        write('Perintah UNI tidak valid!'), nl,
+        ambilKartu
+    ).
+
+tangkap(Nama) :-    
+    currentPlayer(Player),
+    get_hand_file(Nama, File),
+    read_file(File, Hand),
+    get_length(Hand, Length),
+    ((stated_uni(Nama) ; Length > 1) -> 
+    write('Perintah tangkap tidak valid!'), nl,
+    ambilKartu; 
+    (\+ stated_uni(Nama)) -> 
+    giveCard(Nama), 
+    giveCard(Nama),
+    format("~w tertangkap tidak menyerukan UNI.\n", [Nama]),
+    format("~w mendapatkan 2 kartu penalti.\n", [Nama])
+    ).
+
 ambilKartuInternal :-
     asserta(calledDirectly),
     ambilKartu,
@@ -210,6 +241,7 @@ ambilKartu :-
     get_element(DrawnCard,0,Card),
     [Color, Type] = Card,
     format("~w-~w\n",Card),
+    (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
     (calledDirectly -> true ;
         turnOrder(Order),
         get_length(Order, PlayerAmount),
@@ -219,6 +251,15 @@ ambilKartu :-
         switchPlayer(Player, NextPlayer),
         format("Giliran ~w.\n", [NextPlayer])
     ), !.
+
+giveCard(OtherPlayer) :-
+    get_hand_file(OtherPlayer, File),
+    read_file(File, Hand),
+    read_file('unused_cards.txt', Draw),
+    splitDeck(Draw, 1, DrawnCard, RestDeck),
+    append_list(Hand,DrawnCard,Result),
+    write_file(File, Result), 
+    write_file('unused_cards.txt', RestDeck).
 
 display_status :-
     \+ started -> fail;
