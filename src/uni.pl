@@ -91,9 +91,7 @@ dealCards(Deck, Players, Unused) :-
 dealHands(Remaining, [], _, Remaining).
 dealHands(Deck, [Name|Rest], HandSize, Remaining) :-
     splitDeck(Deck, HandSize, Hand, RestDeck),
-    atom_concat('kartu_', Name, Temp),
-    atom_concat(Temp, '.txt', FileName),
-    write_file(FileName, Hand),
+    write_file(Name, Hand),
     dealHands(RestDeck, Rest, HandSize, Remaining).
 
 splitDeck(Rest, 0, [], Rest) :- !.

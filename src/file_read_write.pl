@@ -63,9 +63,7 @@ write_cards_rest(Stream, [Card | Rest]) :-
 
 create_player_files([]).
 create_player_files([Name | Rest]) :-
-   atom_concat('kartu_', Name, Temp),
-   atom_concat(Temp, '.txt', FileName),
-   write_file(FileName, []),
+   write_file(Name, []),
    create_player_files(Rest).
 
 ownAppend([], Output, Output).

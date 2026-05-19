@@ -2,10 +2,8 @@ peek :- lihatKartu. % js to make it faster
 /* THIS ONE WORKS, BUT IS NOT EXACTLY THE SAME AS THE EXAMPLE IN THE SPEK*/ 
 lihatKartu :-
     currentPlayer(Player),
-    atom_concat('kartu_', Player, Temp),
-    atom_concat(Temp, '.txt', Cardfile),
 %    format("~w", [Cardfile]), for debug purposes
-    read_file(Cardfile, Cards),
+    read_file(Player, Cards),
     get_length(Cards, Length),
     format("~nBerikut kartu yang Anda miliki: ~n", []),
     printCards(1, Length, Cards).
