@@ -393,10 +393,10 @@ endGame :-
     summary(Order, PlayerAmount, ListScore),
     format("\nUrutan pemenang:\n", []),
     ownSort(ListScore, SortedScore),
-    winOrder(ListScore),
-    [[Player, _]] = Top, 
+    winOrder(SortedScore),
+    [[Player, _] | _] = SortedScore, 
     format("\n", []),
-    format("Selamat, ~w, menjadi pemenang!\n",[Top]).
+    format("Selamat, ~w, menjadi pemenang!\n",[Player]).
 
 summary([Player | Rest], PlayerNum, ListScore) :-
     format("~w: ", [Player]),
@@ -407,9 +407,9 @@ summary([Player | Rest], PlayerNum, ListScore) :-
     format(" = ~d poin", [CardSum]),
     format("\n", []),
     Pair = [Player, CardSum],
-    ownAppend(Pair, Tuple, ListScore),
+    ownAppend(Pair, ListScore, NewListScore),
     PlayerNum1 is PlayerNum - 1,
-    summary(Rest, PlayerNum1, ListScore).
+    summary(Rest, PlayerNum1, NewListScore).
 
 printCards([]) :-
     format("kartu habis", []), !.
@@ -472,7 +472,6 @@ winOrderH([[Player, Score] | Rest], Index, Length) :-
     winOrderH(Rest, Index1, Length).
 
 % Insertion sort
-ownSort([], []).
 ownSort(List, Sorted) :-
     iSort(List, [], Sorted).
 
@@ -481,11 +480,11 @@ iSort([Head | Tail], Acc, Sorted) :-
     insert(Head, Acc, NAcc),
     iSort(Tail, NAcc, Sorted).
 
-insert(X, [Y | T], [Y | NT]) :-
-    X > Y,
-    insert(X, T, NT).
-insert(X, [Y | T], [X, Y | T]) :-
-    X =< Y.
+insert([P1, S1], [[P2, S2] | T], [[P2, S2] | NT]) :-
+    S1 > S2,
+    insert([P1, S1], T, NT).
+insert([P1, S1], [[P2, S2] | T], [[P1, S1], [P2, S2] | T]) :-
+    S1 =< S2.
 insert(X, [], [X]).
 
 save :- true.
