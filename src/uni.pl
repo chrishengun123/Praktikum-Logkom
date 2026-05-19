@@ -402,8 +402,7 @@ endGame :-
 
 summary([Player | Rest], PlayerNum, ListScore) :-
     format("~w: ", [Player]),
-    get_hand_file(Player, File),
-    read_file(File, Cards),
+    read_file(Player, Cards),
     printCards(Cards),
     format("= ", []),
     countCards(Cards, CardSum),
