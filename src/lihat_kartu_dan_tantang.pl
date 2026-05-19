@@ -42,19 +42,20 @@ hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :-
     (hasColor(LastPlayerCards, LastColor) ; hasType(LastPlayerCards, LastType)) -> 
     (format("Tantangan berhasil! ~w mendapatkan 4 kartu acak.", [LastPlayer]),
     switchPlayer(Player, LastPlayer),
-    giveCard(LastPlayer),
-    giveCard(LastPlayer),
-    giveCard(LastPlayer),
-    giveCard(LastPlayer),
+    ambilKartuInternal, 
+    ambilKartuInternal, 
+    ambilKartuInternal, 
+    ambilKartuInternal, 
     switchPlayer(LastPlayer, Player); true).
 % tantangan gagal
 hasSameColorOrType(Player, _LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (\+(hasColor(LastPlayerCards, LastColor)), \+(hasType(LastPlayerCards, LastType))) -> 
     (format("Tantangan gagal! ~w mendapatkan 6 kartu acak.", [Player]),
-    giveCard(Player),
-    giveCard(Player),
-    giveCard(Player),
-    giveCard(Player),
-    giveCard(Player),
-    giveCard(Player); true).
+    ambilKartuInternal, 
+    ambilKartuInternal, 
+    ambilKartuInternal, 
+    ambilKartuInternal, 
+    ambilKartuInternal, 
+    ambilKartuInternal 
+    ; true).
 
