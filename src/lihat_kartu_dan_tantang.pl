@@ -27,32 +27,32 @@ tantang :-
     LastTurn is (Turn - 1) mod PlayerAmount,
     get_element(Order, LastTurn, LastPlayer),
     % read the last player's cards
-    format("Memeriksa kartu ~w...", [LastPlayer])
+    format("Memeriksa kartu ~w...", [LastPlayer]),
     read_file(LastPlayer, LastPlayerCards), 
     % get discard pile
     read_file('discard.txt', Discard),
     get_element(Discard, 1, LastCard),
     % get lastcard color and number/type
     [LastColor, LastType] = LastCard,
-    hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType).
+    hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType),!.
 % logic: tantangan berhasil
 hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (hasColor(LastPlayerCards, LastColor) ; hasType(LastPlayerCards, LastType)) -> 
     (format("Tantangan berhasil! ~w mendapatkan 4 kartu acak.", [LastPlayer]),
     switchPlayer(Player, LastPlayer),
-    ambilKartu,
-    ambilKartu,
-    ambilKartu,
-    ambilKartu,
+    giveCard(LastPlayer),
+    giveCard(LastPlayer),
+    giveCard(LastPlayer),
+    giveCard(LastPlayer),
     switchPlayer(LastPlayer, Player); true).
 % tantangan gagal
-hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :- 
+hasSameColorOrType(Player, _LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (\+(hasColor(LastPlayerCards, LastColor)), \+(hasType(LastPlayerCards, LastType))) -> 
     (format("Tantangan gagal! ~w mendapatkan 6 kartu acak.", [Player]),
-    ambilKartu,
-    ambilKartu,
-    ambilKartu,
-    ambilKartu,
-    ambilKartu,
-    ambilKartu; true).
+    giveCard(Player),
+    giveCard(Player),
+    giveCard(Player),
+    giveCard(Player),
+    giveCard(Player),
+    giveCard(Player); true).
 
