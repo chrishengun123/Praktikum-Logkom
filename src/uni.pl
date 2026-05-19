@@ -11,6 +11,7 @@
 :- dynamic(stated_uni/1).
 :- dynamic(playerWon/1).
 :- dynamic(skipped/0).
+:- dynamic(calledInternally/0).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -83,7 +84,7 @@ printCard([Name | Rest]) :-
     printCard(Rest).
 
 dealCards(Deck, Players, Unused) :-
-    Handsize is 7,
+    Handsize is 2,
     dealHands(Deck, Players, Handsize, Unused).
 
 dealHands(Remaining, [], _, Remaining).
@@ -109,7 +110,7 @@ findStartingDiscard([Card | Rest], Discard, [Card | Unused]) :-
 switchPlayer(Player, NextPlayer) :- 
     retract(currentPlayer(Player)),
     asserta(currentPlayer(NextPlayer)),
-    (skipped -> retract(skipped)).
+    (skipped -> retract(skipped) ; true).
 
 cardEffect([_, Type]) :-
     currentPlayer(Player),
@@ -134,8 +135,9 @@ cardEffect([_, Type]) :-
         write('Giliran berubah arah.'), nl,
         format("Giliran ~w.\n",[NextPlayer])
     );
-    ((Type == 'draw_two') ->
-        giveCard(Player), giveCard(Player), 
+    ((Type == 'draw_2') ->
+        currentPlayer(Player),
+        ambilKartuInternal, ambilKartuInternal,
         format("~w mendapatkan 2 kartu acak.\n", [Player]),
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
@@ -152,14 +154,15 @@ cardEffect([_, Type]) :-
         format("Giliran ~w\n.", [Player])
     );
     ((Type == 'wild_draw_four') ->
-        % giveCard(Player), giveCard(Player), giveCard(Player), giveCard(Player), 
+        currentPlayer(Player),
+        ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, 
         format("~w mendapatkan 4 kartu acak.\n", [Player]),
-        format("Pilih warna:\n", []),
+        format("Pilih warna: ", []),
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
+        format("Giliran ~w\n.", [Player]),
         read_file('discard.txt', [_|SubDiscardPile]),
-        write_file('discard.txt', [[NewColor|Type]|SubDiscardPile]),
-        format("Giliran ~w\n.", [Player])
+        write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
     true.
 
@@ -212,7 +215,7 @@ uni(I) :-
         playCard(I)
     ;
         format("Perintah UNI tidak valid. ~w mendapatkan 1 kartu penalti.\n", [Player]),
-        giveCard(Player),
+        ambilKartuInternal,
         turnOrder(Order),
         get_length(Order, PlayerAmount),
         get_index(Order, Player, Turn),
@@ -223,19 +226,33 @@ uni(I) :-
     ), !.
 
 tangkap(Nama) :-    
-    currentPlayer(Player),
-    read_file(Player, Hand),
-    get_length(Hand, Length),
+    read_file(Nama, LastHand), 
+    get_length(LastHand, Length),
     ((stated_uni(Nama) ; Length > 1) -> 
     format("Perintah tangkap tidak valid. ~w mendapatkan 1 kartu penalti.\n", [Player]),
-    giveCard(Player); 
+    ambilKartuInternal; 
     (\+ stated_uni(Nama)) -> 
-    giveCard(Nama), 
-    giveCard(Nama),
-    format("~w tertangkap tidak menyerukan UNI.\n", [Nama]),
-    format("~w mendapatkan 2 kartu penalti.\n", [Nama])),
+    currentPlayer(Player),
     turnOrder(Order),
     get_length(Order, PlayerAmount),
+    reverse_list(Order, NewOrder),
+    retract(turnOrder(Order)),
+    asserta(turnOrder(NewOrder)),
+    get_index(Order, Player, Turn),
+    NextTurn is Turn+2 mod PlayerAmount,
+    get_element(Order, NextTurn, NextPlayer),
+    switchPlayer(Player, NextPlayer),
+    ambilKartuInternal, ambilKartuInternal,
+    format("~w tertangkap tidak menyerukan UNI.\n", [Nama]),
+    format("~w mendapatkan 2 kartu penalti.\n", [Nama])
+    ),
+    reverse_list(Order, NewOrder),
+    retract(turnOrder(Order)),
+    asserta(turnOrder(NewOrder)),
+    get_index(Order, Player, Turn),
+    NextTurn is Turn+2 mod PlayerAmount,
+    get_element(Order, NextTurn, NextPlayer),
+    switchPlayer(Player, NextPlayer),
     get_index(Order, Player, Turn),
     NextTurn is (Turn+1) mod PlayerAmount,
     get_element(Order, NextTurn, NextPlayer),
@@ -251,29 +268,25 @@ ambilKartu :-
     splitDeck(ShuffledDeck, 1, DrawnCard, _),
     append_list(Hand,DrawnCard,Result),
     write_file(Player, Result), 
+    (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
+    (calledInternally -> true ; 
     format("~w mendapatkan kartu: ",[Player]),
     get_element(DrawnCard,0,Card),
     [Color, Type] = Card,
     format("~w-~w\n", [Color, Type]),
-    (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
     turnOrder(Order),
     get_length(Order, PlayerAmount),
     get_index(Order, Player, Turn),
     NextTurn is (Turn+1) mod PlayerAmount,
     get_element(Order, NextTurn, NextPlayer),
     switchPlayer(Player, NextPlayer),
-    format("Giliran ~w.\n", [NextPlayer]),
+    format("Giliran ~w.\n", [NextPlayer])),
     !.
 
-% take a card without changing the current player
-giveCard(OtherPlayer) :-
-    read_file(OtherPlayer, Hand),
-    read_file('pool.txt', Draw),
-    shuffle(Draw, ShuffledDeck),
-    splitDeck(ShuffledDeck, 1, DrawnCard, _),
-    append_list(Hand,DrawnCard,Result),
-    write_file(OtherPlayer, Result), 
-    (stated_uni(OtherPlayer) -> retract(stated_uni(OtherPlayer)) ; true).
+ambilKartuInternal :-
+    asserta(calledInternally),
+    ambilKartu,
+    retract(calledInternally).
 
 display_status :-
     \+ started -> fail;
