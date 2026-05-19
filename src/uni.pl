@@ -11,6 +11,7 @@
 :- dynamic(calledDirectly/0).
 % Check which player has stated UNI
 :- dynamic(stated_uni/1).
+:- dynamic(playerWon/1).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -378,6 +379,112 @@ printPlayersInfo(4) :-
     read_file(FourthFile, FourthCards),
     get_length(FourthCards, FourthLength),
     format("Jumlah kartu : ~w\n", [FourthLength]).
+
+endGame :-
+    retract(started),
+    format("Permainan selesai! ~w menghabiskan semua kartunya!\n\n", []),
+    format("Berikut perhitungan poin sisa kartu.\n", []),
+    turnOrder(Order),
+    get_length(Order, PlayerAmount),
+    ListScore = [],
+    summary(Order, PlayerAmount, ListScore),
+    format("\nUrutan pemenang:\n", []),
+    ownSort(ListScore, SortedScore),
+    winOrder(ListScore),
+    [[Player, _]] = Top, 
+    format("\n", []),
+    format("Selamat, ~w, menjadi pemenang!\n",[Top]).
+
+summary([Player | Rest], PlayerNum, ListScore) :-
+    format("~w: ", [Player]),
+    get_hand_file(Player, File),
+    read_file(File, Cards),
+    printCards(Cards),
+    format("= ", []),
+    countCards(Cards, CardSum),
+    format(" = ~d poin", [CardSum]),
+    format("\n", []),
+    Pair = [Player, CardSum],
+    ownAppend(Pair, Tuple, ListScore),
+    PlayerNum1 is PlayerNum - 1,
+    summary(Rest, PlayerNum1, ListScore),
+
+printCards([]) :-
+    format("kartu habis", []), !.
+printCards(Last) :-
+    [Color | Type] = Last,
+    format("~w-~w ", [Color, Type]).
+printCards([Top | Rest]) :-
+    [Color | Type] = Top,
+    format("~w-~w + ", [Color, Type]),
+    printCards(Rest).
+
+countCards([], Sum) :-
+    Sum is 0, !.
+
+countCards(PlayerCards, _) :-
+    countCardsH(PlayerCards, 0).
+
+countCardsH(Last, Sum) :-
+    (ownMember(Last, ['0']) -> Sum1 is Sum + 0, format("0", []));
+    (ownMember(Last, ['1']) -> Sum1 is Sum + 1, format("1", []));
+    (ownMember(Last, ['2']) -> Sum1 is Sum + 2, format("2", []));
+    (ownMember(Last, ['3']) -> Sum1 is Sum + 3, format("3", []));
+    (ownMember(Last, ['4']) -> Sum1 is Sum + 4, format("4", []));
+    (ownMember(Last, ['5']) -> Sum1 is Sum + 5, format("5", []));
+    (ownMember(Last, ['6']) -> Sum1 is Sum + 6, format("6", []));
+    (ownMember(Last, ['7']) -> Sum1 is Sum + 7, format("7", []));
+    (ownMember(Last, ['8']) -> Sum1 is Sum + 8, format("8", []));
+    (ownMember(Last, ['9']) -> Sum1 is Sum + 9, format("9", []));
+    (ownMember(Last, ['skip', 'reverse', 'draw_2']) -> Sum1 is Sum + 10, format("10", []));
+    (ownMember(Last, ['wild', 'wild_draw_four']) -> Sum1 is Sum + 20, format("20", [])),
+    Sum is Sum1.
+
+countCardsH([Head | Rest], Sum) :-
+    (ownMember(Head, ['0']) -> Sum1 is Sum + 0, format("0 + ", []));
+    (ownMember(Head, ['1']) -> Sum1 is Sum + 1, format("1 + ", []));
+    (ownMember(Head, ['2']) -> Sum1 is Sum + 2, format("2 + ", []));
+    (ownMember(Head, ['3']) -> Sum1 is Sum + 3, format("3 + ", []));
+    (ownMember(Head, ['4']) -> Sum1 is Sum + 4, format("4 + ", []));
+    (ownMember(Head, ['5']) -> Sum1 is Sum + 5, format("5 + ", []));
+    (ownMember(Head, ['6']) -> Sum1 is Sum + 6, format("6 + ", []));
+    (ownMember(Head, ['7']) -> Sum1 is Sum + 7, format("7 + ", []));
+    (ownMember(Head, ['8']) -> Sum1 is Sum + 8, format("8 + ", []));
+    (ownMember(Head, ['9']) -> Sum1 is Sum + 9, format("9 + ", []));
+    (ownMember(Head, ['skip', 'reverse', 'draw_2']) -> Sum1 is Sum + 10, format("10 + ", []));
+    (ownMember(Head, ['wild', 'wild_draw_four']) -> Sum1 is Sum + 20, format("20 + ", [])),
+    countCardsH(Rest, Sum1),
+    Sum is Sum1.
+
+winOrder([]).
+winOrder(ListScore) :-
+    ownSort(ListScore, Sorted),
+    get_length(Sorted, Length),
+    Length1 is Length + 1,
+    winOrderH(Sorted, 1, Length1).
+
+winOrderH([[Player, Score] | Rest], Index, Length) :-
+    Index =< Length,
+    format("~d. ~w (~d poin)\n", [Index, Player, Score]),
+    Index1 is Index + 1,
+    winOrderH(Rest, Index1, Length).
+
+% Insertion sort
+ownSort([], []).
+ownSort(List, Sorted) :-
+    iSort(List, [], Sorted).
+
+iSort([], Acc, Acc).
+iSort([Head | Tail], Acc, Sorted) :-
+    insert(Head, Acc, NAcc),
+    iSort(Tail, NAcc, Sorted).
+
+insert(X, [Y | T], [Y | NT]) :-
+    X > Y,
+    insert(X, T, NT).
+insert(X, [Y | T], [X, Y | T]) :-
+    X =< Y.
+insert(X, [], [X]).
 
 save :- true.
 load :- true.
