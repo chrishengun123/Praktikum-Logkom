@@ -44,7 +44,7 @@ startGame :-
     % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
     asserta(started),
     asserta(currentPlayer(First)),
-    asserta(turnOrder([First | Rest])).
+    asserta(turnOrder([First | Rest])), !.
 
 validify(PlayerNum, ValidNum) :-
     (PlayerNum > 4 ; PlayerNum < 2)
@@ -202,7 +202,7 @@ playCard(Idx) :-
         format("kartu ~w-~w tidak bisa dimainkan", Card)
     ).
 
-mainkanKartu(I) :- playCard(I).
+mainkanKartu(I) :- playCard(I), !.
 
 uni(I) :- 
     currentPlayer(Player),
@@ -221,7 +221,7 @@ uni(I) :-
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer),
         format("Giliran ~w.\n", [NextPlayer])
-    ).
+    ), !.
 
 tangkap(Nama) :-    
     currentPlayer(Player),
@@ -241,39 +241,39 @@ tangkap(Nama) :-
     NextTurn is (Turn+1) mod PlayerAmount,
     get_element(Order, NextTurn, NextPlayer),
     switchPlayer(Player, NextPlayer),
-    format("Giliran ~w.\n", [NextPlayer]).
+    format("Giliran ~w.\n", [NextPlayer]), !.
 
+% take a card and change the current player
 ambilKartu :-
     currentPlayer(Player),
     read_file(Player, Hand),
-    read_file('unused_cards.txt', Draw),
-    splitDeck(Draw, 1, DrawnCard, RestDeck),
+    read_file('pool.txt', Draw),
+    shuffle(Draw, ShuffledDeck),
+    splitDeck(ShuffledDeck, 1, DrawnCard, _),
     append_list(Hand,DrawnCard,Result),
     write_file(Player, Result), 
-    write_file('unused_cards.txt', RestDeck),
     format("~w mendapatkan kartu: ",[Player]),
     get_element(DrawnCard,0,Card),
     [Color, Type] = Card,
     format("~w-~w\n", [Color, Type]),
     (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
-    get_length(Draw, DrawSize),
-    (DrawSize =:= 1 -> reshuffle; true),
+    turnOrder(Order),
+    get_length(Order, PlayerAmount),
+    get_index(Order, Player, Turn),
+    NextTurn is (Turn+1) mod PlayerAmount,
+    get_element(Order, NextTurn, NextPlayer),
+    switchPlayer(Player, NextPlayer),
+    format("Giliran ~w.\n", [NextPlayer]),
     !.
 
-reshuffle :-
-    read_file('discard.txt', Discard),
-    splitDeck(Discard, 1, Top, Draw),
-    shuffle(Draw, Reshuffled),
-    write_file('unused_cards.txt',Reshuffled),
-    write_file('discard.txt', Top).
-
+% take a card without changing the current player
 giveCard(OtherPlayer) :-
     read_file(OtherPlayer, Hand),
-    read_file('unused_cards.txt', Draw),
-    splitDeck(Draw, 1, DrawnCard, RestDeck),
+    read_file('pool.txt', Draw),
+    shuffle(Draw, ShuffledDeck),
+    splitDeck(ShuffledDeck, 1, DrawnCard, _),
     append_list(Hand,DrawnCard,Result),
     write_file(OtherPlayer, Result), 
-    write_file('unused_cards.txt', RestDeck),
     (stated_uni(OtherPlayer) -> retract(stated_uni(OtherPlayer)) ; true).
 
 display_status :-
