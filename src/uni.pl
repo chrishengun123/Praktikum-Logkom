@@ -160,14 +160,14 @@ cardEffect([_, Type]) :-
     );
     ((Type == 'wild_draw_four') ->
         currentPlayer(Player),
-        ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, 
         format("~w mendapatkan 4 kartu acak.\n", [Player]),
         format("Pilih warna: ", []),
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
         format("Giliran ~w\n.", [Player]),
         read_file('discard.txt', [_|SubDiscardPile]),
-        write_file('discard.txt', [[NewColor, Type]|SubDiscardPile])
+        write_file('discard.txt', [[NewColor, Type]|SubDiscardPile]),
+        asserta(skipped)
     );
     true.
 
