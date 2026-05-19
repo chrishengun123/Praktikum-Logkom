@@ -209,7 +209,7 @@ uni(I) :-
     ).
 
 tangkap(Nama) :-    
-    currentPlayer(Player),
+    currentPlayer(Nama),
     read_file(Player, Hand),
     get_length(Hand, Length),
     ((stated_uni(Nama) ; Length > 1) -> 
@@ -237,7 +237,7 @@ ambilKartu :-
     write_file('unused_cards.txt', RestDeck),
     format("~w mendapatkan kartu: ",[Player]),
     get_element(DrawnCard,0,Card),
-    format("~w-~w\n",Card),
+    format("~w-~w\n",[Color, Type]),
     (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
     get_length(Draw, DrawSize),
     (DrawSize =:= 1 -> reshuffle; true),
@@ -385,39 +385,51 @@ printPlayersInfo(4) :-
 
 endGame :-
     retract(started),
-    format("Permainan selesai! ~w menghabiskan semua kartunya!\n\n", []),
-    format("Berikut perhitungan poin sisa kartu.\n", []),
     turnOrder(Order),
     get_length(Order, PlayerAmount),
     ListScore = [],
-    summary(Order, PlayerAmount, ListScore),
-    format("\nUrutan pemenang:\n", []),
+    helpCount(Order, ListScore),
     ownSort(ListScore, SortedScore),
-    winOrder(ListScore),
-    [[Player, _]] = Top, 
+    [[Player, _]] = SortedScore,
+    format("Permainan selesai! ~w menghabiskan semua kartunya!\n\n", [Player]),
+    format("Berikut perhitungan poin sisa kartu.\n", []),
+    ListScore = [],
+    summary(Order, ListScore),
+    [[Player, _]] = SortedScore, 
+    format("\nUrutan pemenang:\n", []),
+    winOrder(ListScore, PlayerAmount),
     format("\n", []),
-    format("Selamat, ~w, menjadi pemenang!\n",[Top]).
+    format("Selamat, ~w, menjadi pemenang!\n",[Player]).
 
-summary([Player | Rest], PlayerNum, ListScore) :-
+helpCount([Player | Rest], ListScore) :-
+    get_hand_file(Player, File),
+    read_file(File, Cards),
+    countCards(Cards, CardSum),
+    Pair = [Player, CardSum],
+    ownAppend(Pair, ListScore, NewListScore),
+    helpCount(Rest, NewListScore).
+
+summary([Player | Rest], ListScore) :-
     format("~w: ", [Player]),
-    read_file(Player, Cards),
+    get_hand_file(Player, File),
+    read_file(File, Cards),
     printCards(Cards),
     format("= ", []),
     countCards(Cards, CardSum),
     format(" = ~d poin", [CardSum]),
     format("\n", []),
     Pair = [Player, CardSum],
-    ownAppend(Pair, Tuple, ListScore),
-    PlayerNum1 is PlayerNum - 1,
-    summary(Rest, PlayerNum1, ListScore).
+    ownAppend(Pair, ListScore, NewListScore),
+    summary(Rest, NewListScore).
 
 printCards([]) :-
     format("kartu habis", []), !.
 printCards(Last) :-
-    [Color | Type] = Last,
-    format("~w-~w ", [Color, Type]).
+    [Color, Type] = Last,
+    format("~w-~w ", [Color, Type]),
+    !.
 printCards([Top | Rest]) :-
-    [Color | Type] = Top,
+    [Color, Type] = Top,
     format("~w-~w + ", [Color, Type]),
     printCards(Rest).
 
@@ -458,12 +470,10 @@ countCardsH([Head | Rest], Sum) :-
     countCardsH(Rest, Sum1),
     Sum is Sum1.
 
-winOrder([]).
-winOrder(ListScore) :-
+winOrder([], 0).
+winOrder(ListScore, PlayerNum) :-
     ownSort(ListScore, Sorted),
-    get_length(Sorted, Length),
-    Length1 is Length + 1,
-    winOrderH(Sorted, 1, Length1).
+    winOrderH(Sorted, 1, PlayerNum).
 
 winOrderH([[Player, Score] | Rest], Index, Length) :-
     Index =< Length,
@@ -472,7 +482,6 @@ winOrderH([[Player, Score] | Rest], Index, Length) :-
     winOrderH(Rest, Index1, Length).
 
 % Insertion sort
-ownSort([], []).
 ownSort(List, Sorted) :-
     iSort(List, [], Sorted).
 
@@ -481,11 +490,11 @@ iSort([Head | Tail], Acc, Sorted) :-
     insert(Head, Acc, NAcc),
     iSort(Tail, NAcc, Sorted).
 
-insert(X, [Y | T], [Y | NT]) :-
-    X > Y,
-    insert(X, T, NT).
-insert(X, [Y | T], [X, Y | T]) :-
-    X =< Y.
+insert([P1, S1], [[P2, S2] | T], [[P2, S2] | NT]) :-
+    S1 > S2,
+    insert([P1, S1], T, NT).
+insert([P1, S1], [[P2, S2] | T], [[P1, S1], [P2, S2] | T]) :-
+    S1 =< S2.
 insert(X, [], [X]).
 
 save :- true.
