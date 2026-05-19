@@ -10,6 +10,7 @@
 % Check which player has stated UNI
 :- dynamic(stated_uni/1).
 :- dynamic(playerWon/1).
+:- dynamic(skipped/0).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -107,7 +108,8 @@ findStartingDiscard([Card | Rest], Discard, [Card | Unused]) :-
 
 switchPlayer(Player, NextPlayer) :- 
     retract(currentPlayer(Player)),
-    asserta(currentPlayer(NextPlayer)).
+    asserta(currentPlayer(NextPlayer)),
+    (skipped -> retract(skipped)).
 
 cardEffect([_, Type]) :-
     currentPlayer(Player),
@@ -150,25 +152,22 @@ cardEffect([_, Type]) :-
         format("Giliran ~w\n.", [Player])
     );
     ((Type == 'wild_draw_four') ->
-        giveCard(Player), giveCard(Player), giveCard(Player), giveCard(Player), 
+        % giveCard(Player), giveCard(Player), giveCard(Player), giveCard(Player), 
         format("~w mendapatkan 4 kartu acak.\n", [Player]),
         format("Pilih warna:\n", []),
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
         read_file('discard.txt', [_|SubDiscardPile]),
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile]),
-        get_index(Order, Player, Turn),
-        NextTurn is (Turn+1) mod PlayerAmount,
-        get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer),
-        format("Giliran ~w\n.", [NextPlayer])
+        format("Giliran ~w\n.", [Player])
     );
     true.
 
 % Plays the card at index I.
 % I:int
 playCard(Idx) :-
-    \+ started -> fail;
+    skipped -> format("giliranmu diskip",[]);
+    \+ started -> format("permainan belum mulai",[]);
     currentPlayer(Player),
     read_file(Player, Cards),
     I is Idx-1,
