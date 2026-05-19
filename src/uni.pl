@@ -12,6 +12,7 @@
 % Check which player has stated UNI
 :- dynamic(stated_uni/1).
 :- dynamic(playerWon/1).
+:- dynamic(skipped/0).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -160,7 +161,7 @@ cardEffect([_, Type]) :-
 % Plays the card at index I.
 % I:int
 playCard(Idx) :-
-    \+ started -> fail;
+    (skipped; \+ started) -> fail;
     currentPlayer(Player),
     read_file(Player, Cards),
     I is Idx-1,
