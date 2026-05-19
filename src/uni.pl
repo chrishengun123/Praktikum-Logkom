@@ -416,7 +416,7 @@ summary([Player | Rest], PlayerNum, ListScore) :-
     Pair = [Player, CardSum],
     ownAppend(Pair, Tuple, ListScore),
     PlayerNum1 is PlayerNum - 1,
-    summary(Rest, PlayerNum1, ListScore),
+    summary(Rest, PlayerNum1, ListScore).
 
 printCards([]) :-
     format("kartu habis", []), !.
