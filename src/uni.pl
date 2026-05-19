@@ -210,8 +210,7 @@ uni(I) :-
 
 tangkap(Nama) :-    
     currentPlayer(Player),
-    get_hand_file(Nama, File),
-    read_file(File, Hand),
+    read_file(Player, Hand),
     get_length(Hand, Length),
     ((stated_uni(Nama) ; Length > 1) -> 
     write('Perintah tangkap tidak valid!'), nl,
@@ -234,11 +233,10 @@ ambilKartu :-
     read_file('unused_cards.txt', Draw),
     splitDeck(Draw, 1, DrawnCard, RestDeck),
     append_list(Hand,DrawnCard,Result),
-    write_file(File, Result), 
+    write_file(Player, Result), 
     write_file('unused_cards.txt', RestDeck),
     format("~w mendapatkan kartu: ",[Player]),
     get_element(DrawnCard,0,Card),
-    [Color, Type] = Card,
     format("~w-~w\n",Card),
     (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
     get_length(Draw, DrawSize),
