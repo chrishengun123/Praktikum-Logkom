@@ -125,11 +125,14 @@ cardEffect([_, Type]) :-
         format("Giliran ~w\n.", [NextPlayer])
     );
     ((Type == 'reverse') ->
+        currentPlayer(Player),
+        turnOrder(Order),
+        get_length(Order, PlayerAmount),
         reverse_list(Order, NewOrder),
         retract(turnOrder(Order)),
         asserta(turnOrder(NewOrder)),
         get_index(Order, Player, Turn),
-        NextTurn is Turn+2 mod PlayerAmount,
+        NextTurn is (Turn+2) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer),
         write('Giliran berubah arah.'), nl,
@@ -165,6 +168,9 @@ cardEffect([_, Type]) :-
         write_file('discard.txt', [[NewColor|Type]|SubDiscardPile])
     );
     true.
+
+check_reverse([_, Type]) :-
+    (Type == 'reverse' -> write('It is a reverse'); write('It is something else')).
 
 % Plays the card at index I.
 % I:int
@@ -235,8 +241,6 @@ tangkap(Nama) :-
     format("Perintah tangkap tidak valid. ~w mendapatkan 1 kartu penalti.\n", [Player]),
     ambilKartuInternal; 
     (\+ stated_uni(Nama)) -> 
-    get_index(Order, Player, Turn),
-    LastTurn is (Turn - 1) mod PlayerAmount,
     switchPlayer(Player, Nama),
     ambilKartuInternal, ambilKartuInternal,
     format("~w tertangkap tidak menyerukan UNI.\n", [Nama]),
