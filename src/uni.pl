@@ -84,7 +84,7 @@ printCard([Name | Rest]) :-
     printCard(Rest).
 
 dealCards(Deck, Players, Unused) :-
-    Handsize is 2,
+    Handsize is 7,
     dealHands(Deck, Players, Handsize, Unused).
 
 dealHands(Remaining, [], _, Remaining).
