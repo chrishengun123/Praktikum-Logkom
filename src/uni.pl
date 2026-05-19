@@ -260,6 +260,7 @@ tangkap(Nama) :-
 
 % take a card and change the current player
 ambilKartu :-
+    ((skipped, \+ calledInternally) -> ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal);
     currentPlayer(Player),
     read_file(Player, Hand),
     read_file('pool.txt', Draw),
