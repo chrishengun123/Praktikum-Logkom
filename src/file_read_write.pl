@@ -1,0 +1,71 @@
+get_color_and_type_string([Char | SubCard], [Color, Type]) :- 
+    (Char == ('-') -> Color = [], Type = SubCard);
+    get_color_and_type_string(SubCard, [SubColor, Type]),
+    Color = [Char | SubColor].
+
+list_to_atom([], '').
+list_to_atom([H|T], Atom) :-
+    list_to_atom(T, TailAtom),
+    atom_concat(H, TailAtom, Atom).
+
+% Converts the card name to usable card data.
+card_name_to_card(CardName, [Color, Type]) :- 
+    get_color_and_type_string(CardName, [ColorList,TypeList]),
+    list_to_atom(ColorList, Color),
+    list_to_atom(TypeList, Type).
+
+% Returns the first card name in the list and removes it from the list.
+read_card([Char | SubList], NewList, CardName) :-
+    ((Char == (','); Char == (']')) -> CardName = [], NewList = SubList);
+    read_card(SubList, NewList, SubCardName),
+    (
+        ((Char == ('[')) -> CardName = SubCardName);
+        CardName = [Char | SubCardName]
+    ).
+
+% Returns all the cards in the list.
+read_cards(List, Cards) :- 
+    (List == [] -> Cards = []);
+    read_card(List, SubList, CardName),
+    card_name_to_card(CardName, Card),
+    read_cards(SubList, SubCards),
+    Cards = [Card | SubCards].
+
+read_file(Stream, Char, Chars) :-
+    Char == end_of_file -> Chars = [];
+    Chars = [Char | Rest],
+    get_char(Stream, Next),
+    read_file(Stream, Next, Rest).
+
+read_file(File, Output) :-
+    open(File, read, Stream),
+    get_char(Stream, Char),
+    read_file(Stream, Char, Data),
+    read_cards(Data, Output),
+    close(Stream).
+
+write_file(File, Input) :-
+    open(File, write, Stream),
+    format(Stream, "[", []),
+    write_cards(Stream, Input),
+    format(Stream, "]", []),
+    close(Stream).
+
+write_cards(_, []).
+write_cards(Stream, [Card | Rest]) :-
+    format(Stream, "~w-~w", Card),
+    write_cards_rest(Stream, Rest).
+
+write_cards_rest(_, []).
+write_cards_rest(Stream, [Card | Rest]) :-
+    format(Stream, ",~w-~w", Card),
+    write_cards_rest(Stream, Rest).
+
+create_player_files([]).
+create_player_files([Name | Rest]) :-
+   write_file(Name, []),
+   create_player_files(Rest).
+
+ownAppend([], Output, Output).
+ownAppend([Head | Tail], List, [Head | ResTail]) :-
+   ownAppend(Tail, List, ResTail).

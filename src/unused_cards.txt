@@ -1,0 +1,1 @@
+[black-wild,hijau-6,hijau-skip,merah-5,hijau-4,merah-0,merah-reverse,merah-6,biru-4,merah-7,kuning-8,merah-4,merah-3,black-wild_draw_four,kuning-1,hijau-3,biru-7,hijau-8,kuning-3,hijau-9,kuning-reverse,kuning-skip,biru-draw_2,merah-draw_2,biru-1,hijau-0,biru-5,kuning-2,biru-8,merah-8,kuning-6,hijau-draw_2,biru-reverse,merah-1,hijau-reverse,kuning-9,merah-2,merah-skip,hijau-5]
