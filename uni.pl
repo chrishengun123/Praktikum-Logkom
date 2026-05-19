@@ -243,7 +243,6 @@ tangkap(Nama) :-
     switchPlayer(Player, NextPlayer),
     format("Giliran ~w.\n", [NextPlayer]), !.
 
-% take a card and change the current player
 ambilKartu :-
     currentPlayer(Player),
     read_file(Player, Hand),
@@ -266,7 +265,6 @@ ambilKartu :-
     format("Giliran ~w.\n", [NextPlayer]),
     !.
 
-% take a card without changing the current player
 giveCard(OtherPlayer) :-
     read_file(OtherPlayer, Hand),
     read_file('pool.txt', Draw),
