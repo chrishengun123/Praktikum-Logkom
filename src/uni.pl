@@ -148,7 +148,7 @@ cardEffect([_, Type]) :-
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
         read_file('discard.txt', [_|SubDiscardPile]),
-        write_file('discard.txt', [[NewColor|Type]|SubDiscardPile]),
+        write_file('discard.txt', [[NewColor, Type]|SubDiscardPile]),
         format("Giliran ~w\n.", [Player])
     );
     ((Type == 'wild_draw_four') ->
@@ -158,7 +158,7 @@ cardEffect([_, Type]) :-
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
         read_file('discard.txt', [_|SubDiscardPile]),
-        write_file('discard.txt', [[NewColor|Type]|SubDiscardPile]),
+        write_file('discard.txt', [[NewColor, Type]|SubDiscardPile]),
         format("Giliran ~w\n.", [Player])
     );
     true.
