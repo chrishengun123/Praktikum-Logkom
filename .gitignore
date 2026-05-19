@@ -1,2 +1,5 @@
-*.txt
+*
 !pool.txt
+!uni.pl
+!file_read_write.pl
+!random_card.pl
