@@ -140,6 +140,8 @@ cardEffect([_, Type]) :-
     );
     ((Type == 'draw_2') ->
         currentPlayer(Player),
+        turnOrder(Order),
+        get_length(Order, PlayerAmount),
         ambilKartuInternal, ambilKartuInternal,
         format("~w mendapatkan 2 kartu acak.\n", [Player]),
         get_index(Order, Player, Turn),
