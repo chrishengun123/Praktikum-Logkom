@@ -244,6 +244,8 @@ ambilKartu :-
     [Color, Type] = Card,
     format("~w-~w\n",Card),
     (stated_uni(Player) -> retract(stated_uni(Player)) ; true),
+    get_length(Draw, DrawSize),
+    (DrawSize =:= 1 -> reshuffle; true),
     (calledDirectly -> true ;
         turnOrder(Order),
         get_length(Order, PlayerAmount),
@@ -253,6 +255,13 @@ ambilKartu :-
         switchPlayer(Player, NextPlayer),
         format("Giliran ~w.\n", [NextPlayer])
     ), !.
+
+reshuffle :-
+    read_file('discard.txt', Discard),
+    splitDeck(Discard, 1, Top, Draw),
+    shuffle(Draw, Reshuffled),
+    write_file('unused_cards.txt',Reshuffled),
+    write_file('discard.txt', Top).
 
 giveCard(OtherPlayer) :-
     get_hand_file(OtherPlayer, File),
