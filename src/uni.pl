@@ -162,8 +162,7 @@ cardEffect([_, Type]) :-
 playCard(Idx) :-
     \+ started -> fail;
     currentPlayer(Player),
-    get_hand_file(Player, File),
-    read_file(File, Cards),
+    read_file(Player, Cards),
     I is Idx-1,
     get_element(Cards, I, Card),
     [Color, Type] = Card,
@@ -179,7 +178,7 @@ playCard(Idx) :-
     \+ (Type == 'wild_draw_four', LastType == 'wild') ->
         delete_at(Cards, I, NewCards),
         DiscardPile = [Card | SubDiscardPile],
-        write_file(File, NewCards),
+        write_file(Player, NewCards),
         write_file('discard.txt', DiscardPile),
         format("~w memainkan kartu: ", [Player]),
         format("~w-~w.\n", Card),
@@ -198,8 +197,7 @@ mainkanKartu(I) :- playCard(I).
 
 uni(I) :- 
     currentPlayer(Player),
-    get_hand_file(Player, File),
-    read_file(File, Hand),
+    read_file(Player, Hand),
     get_length(Hand, Length),
     ((Length =:= 2) ->
         playCard(I),
@@ -232,8 +230,7 @@ ambilKartuInternal :-
 
 ambilKartu :-
     currentPlayer(Player),
-    get_hand_file(Player, File),
-    read_file(File, Hand),
+    read_file(Player, Hand),
     read_file('unused_cards.txt', Draw),
     splitDeck(Draw, 1, DrawnCard, RestDeck),
     append_list(Hand,DrawnCard,Result),
@@ -264,12 +261,11 @@ reshuffle :-
     write_file('discard.txt', Top).
 
 giveCard(OtherPlayer) :-
-    get_hand_file(OtherPlayer, File),
-    read_file(File, Hand),
+    read_file(Player, Hand),
     read_file('unused_cards.txt', Draw),
     splitDeck(Draw, 1, DrawnCard, RestDeck),
     append_list(Hand,DrawnCard,Result),
-    write_file(File, Result), 
+    write_file(Player, Result), 
     write_file('unused_cards.txt', RestDeck).
 
 display_status :-
