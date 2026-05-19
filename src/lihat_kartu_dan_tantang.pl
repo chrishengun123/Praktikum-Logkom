@@ -27,14 +27,15 @@ tantang :-
     LastTurn is (Turn - 1) mod PlayerAmount,
     get_element(Order, LastTurn, LastPlayer),
     % read the last player's cards
-    format("Memeriksa kartu ~w...", [LastPlayer]),
+    format("Memeriksa kartu ~w...\n", [LastPlayer]),
     read_file(LastPlayer, LastPlayerCards), 
     % get discard pile
     read_file('discard.txt', Discard),
     get_element(Discard, 1, LastCard),
     % get lastcard color and number/type
     [LastColor, LastType] = LastCard,
-    hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType),!.
+    ((LastColor == 'black', LastType == 'wild_draw_four') -> hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType); 
+    write('Perintah tantang tidak valid.'), nl, write('Tolong lanjutkan giliran Anda.'), nl), !.
 % logic: tantangan berhasil
 hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (hasColor(LastPlayerCards, LastColor) ; hasType(LastPlayerCards, LastType)) -> 
