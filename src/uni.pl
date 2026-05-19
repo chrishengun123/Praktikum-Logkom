@@ -385,86 +385,81 @@ printPlayersInfo(4) :-
 
 endGame :-
     retract(started),
-    format("Permainan selesai! ~w menghabiskan semua kartunya!\n\n", []),
-    format("Berikut perhitungan poin sisa kartu.\n", []),
     turnOrder(Order),
-    get_length(Order, PlayerAmount),
-    ListScore = [],
-    summary(Order, PlayerAmount, ListScore),
+    get_length(Order, PlayerNum),
+    sumCount(Order, [], ListScore),
+    ownSort(ListScore, SortedScore),
+    [[Player, _] | _] = SortedScore, 
+    format("Permainan selesai! ~w menghabiskan semua kartunya!\n\n", [Player]),
+    format("Berikut perhitungan poin sisa kartu.\n", []),
+    summary(Order, ListScore),
     format("\nUrutan pemenang:\n", []),
     ownSort(ListScore, SortedScore),
-    winOrder(SortedScore),
+    winOrder(SortedScore, PlayerNum),
     [[Player, _] | _] = SortedScore, 
     format("\n", []),
     format("Selamat, ~w, menjadi pemenang!\n",[Player]).
 
-summary([Player | Rest], PlayerNum, ListScore) :-
+sumCount([], Acc, Acc).
+sumCount([Player | Rest], Acc, ListScore) :-
+    read_file(Player, Cards),
+    countCards(Cards, CardSum),
+    ownAppend([[Player, CardSum]], Acc, NewListScore),
+    sumCount(Rest, NewListScore, ListScore).
+
+summary([], _).
+summary([Player | Rest], ListScore) :-
     format("~w: ", [Player]),
     read_file(Player, Cards),
     printCards(Cards),
     format("= ", []),
+    printValues(Cards),
     countCards(Cards, CardSum),
     format(" = ~d poin", [CardSum]),
     format("\n", []),
     Pair = [Player, CardSum],
-    ownAppend(Pair, ListScore, NewListScore),
-    PlayerNum1 is PlayerNum - 1,
-    summary(Rest, PlayerNum1, NewListScore).
+    ownAppend([Pair], ListScore, NewListScore),
+    summary(Rest, NewListScore).
+
+printValues([Last]) :-
+    cardValue(Last, Value),
+    format("~w", [Value]).
+printValues([Card | Rest]) :-
+    Rest \= [],
+    cardValue(Card, Value),
+    format("~w + ", [Value]),
+    printValues(Rest).
 
 printCards([]) :-
     format("kartu habis", []), !.
-printCards(Last) :-
-    [Color | Type] = Last,
+printCards([Last]) :-
+    [Color , Type] = Last,
     format("~w-~w ", [Color, Type]).
 printCards([Top | Rest]) :-
-    [Color | Type] = Top,
+    Rest \= [],
+    [Color , Type] = Top,
     format("~w-~w + ", [Color, Type]),
     printCards(Rest).
 
-countCards([], Sum) :-
-    Sum is 0, !.
+countCards([], 0).
+countCards([Card | Rest], Total) :-
+    cardValue(Card, V),
+    countCards(Rest, SubTotal),
+    Total is V + SubTotal.
 
-countCards(PlayerCards, _) :-
-    countCardsH(PlayerCards, 0).
+cardValue([_, Type], V) :-
+  ( Type == '0' -> V = 1
+    ; ownMember(Type, ['1','2','3','4','5','6','7','8','9']) ->
+        name(Type, [Code]), V is Code - 0'0
+    ; ownMember(Type, ['skip','reverse','draw_2']) -> V = 10
+    ; ownMember(Type, ['wild','wild_draw_four']) -> V = 20
+    ; V = 0
+    ).
 
-countCardsH(Last, Sum) :-
-    (ownMember(Last, ['0']) -> Sum1 is Sum + 0, format("0", []));
-    (ownMember(Last, ['1']) -> Sum1 is Sum + 1, format("1", []));
-    (ownMember(Last, ['2']) -> Sum1 is Sum + 2, format("2", []));
-    (ownMember(Last, ['3']) -> Sum1 is Sum + 3, format("3", []));
-    (ownMember(Last, ['4']) -> Sum1 is Sum + 4, format("4", []));
-    (ownMember(Last, ['5']) -> Sum1 is Sum + 5, format("5", []));
-    (ownMember(Last, ['6']) -> Sum1 is Sum + 6, format("6", []));
-    (ownMember(Last, ['7']) -> Sum1 is Sum + 7, format("7", []));
-    (ownMember(Last, ['8']) -> Sum1 is Sum + 8, format("8", []));
-    (ownMember(Last, ['9']) -> Sum1 is Sum + 9, format("9", []));
-    (ownMember(Last, ['skip', 'reverse', 'draw_2']) -> Sum1 is Sum + 10, format("10", []));
-    (ownMember(Last, ['wild', 'wild_draw_four']) -> Sum1 is Sum + 20, format("20", [])),
-    Sum is Sum1.
+winOrder(ListScore, Length) :-
+    winOrderH(ListScore, 1, Length).
 
-countCardsH([Head | Rest], Sum) :-
-    (ownMember(Head, ['0']) -> Sum1 is Sum + 0, format("0 + ", []));
-    (ownMember(Head, ['1']) -> Sum1 is Sum + 1, format("1 + ", []));
-    (ownMember(Head, ['2']) -> Sum1 is Sum + 2, format("2 + ", []));
-    (ownMember(Head, ['3']) -> Sum1 is Sum + 3, format("3 + ", []));
-    (ownMember(Head, ['4']) -> Sum1 is Sum + 4, format("4 + ", []));
-    (ownMember(Head, ['5']) -> Sum1 is Sum + 5, format("5 + ", []));
-    (ownMember(Head, ['6']) -> Sum1 is Sum + 6, format("6 + ", []));
-    (ownMember(Head, ['7']) -> Sum1 is Sum + 7, format("7 + ", []));
-    (ownMember(Head, ['8']) -> Sum1 is Sum + 8, format("8 + ", []));
-    (ownMember(Head, ['9']) -> Sum1 is Sum + 9, format("9 + ", []));
-    (ownMember(Head, ['skip', 'reverse', 'draw_2']) -> Sum1 is Sum + 10, format("10 + ", []));
-    (ownMember(Head, ['wild', 'wild_draw_four']) -> Sum1 is Sum + 20, format("20 + ", [])),
-    countCardsH(Rest, Sum1),
-    Sum is Sum1.
-
-winOrder([]).
-winOrder(ListScore) :-
-    ownSort(ListScore, Sorted),
-    get_length(Sorted, Length),
-    Length1 is Length + 1,
-    winOrderH(Sorted, 1, Length1).
-
+winOrderH([], _, _).
 winOrderH([[Player, Score] | Rest], Index, Length) :-
     Index =< Length,
     format("~d. ~w (~d poin)\n", [Index, Player, Score]),
