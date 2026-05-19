@@ -158,11 +158,12 @@ cardEffect([_, Type]) :-
 
 % Plays the card at index I.
 % I:int
-playCard(I) :-
+playCard(Idx) :-
     \+ started -> fail;
     currentPlayer(Player),
     get_hand_file(Player, File),
     read_file(File, Cards),
+    I is Idx-1,
     get_element(Cards, I, Card),
     [Color, Type] = Card,
     read_file('discard.txt', SubDiscardPile),
