@@ -37,10 +37,8 @@ startGame :-
     format("\nSetiap pemain mendapatkan 7 kartu acak.\n", []),
     % Deals cards from the shuffled deck to each player
     dealCards(ShuffledDeck, Players, Remaining),
-    findStartingDiscard(Remaining, Discard, Unused),
+    findStartingDiscard(Remaining, Discard),
     % Remaining cards get put into unused and the first one is for the discard pile
-    write_file('unused_cards.txt', Unused),
-    write_file('discard.txt', [Discard]),
     format("\nKartu discard top: ~w-~w\n", Discard),
     format("\nGiliran ~w", [First]),
     % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
@@ -102,10 +100,10 @@ splitDeck([Card|Deck], N, [Card|Hand], Rest) :-
 isNumCard([_, Type]) :-
     ownMember(Type, ['0','1','2','3','4','5','6','7','8','9']).
 
-findStartingDiscard([Card | Rest], Card, Rest) :- 
-    isNumCard(Card), !.
-findStartingDiscard([Card | Rest], Discard, [Card | Unused]) :-
-    findStartingDiscard(Rest, Discard, Unused).
+findStartingDiscard([Card | _], Top) :- 
+    isNumCard(Card), !, Top is Card.
+findStartingDiscard([_ | Rest]) :-
+    findStartingDiscard(Rest).
 
 switchPlayer(Player, NextPlayer) :- 
     retract(currentPlayer(Player)),
