@@ -1,5 +1,3 @@
-:- initialization([file_read_write]).
-
 get_element(List, Index, Element) :-
     (Index == 0,!, [Element|_] = List);
     (SubIndex is Index-1, [_|SubList] = List, get_element(SubList, SubIndex, Element)).

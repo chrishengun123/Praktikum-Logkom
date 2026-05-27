@@ -1,3 +1,4 @@
 *
 !pool.txt
 !*.pl
+!Makefile
