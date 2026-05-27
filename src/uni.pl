@@ -1,4 +1,6 @@
-:- initialization([random_card, file_read_write, lihat_kartu_dan_tantang]).
+:- include('random_card.pl').
+:- include('file_read_write.pl').
+:- include('lihat_kartu_dan_tantang.pl').
 % True when the game has started.
 :- dynamic(started/0).
 % The current player.
@@ -12,6 +14,8 @@
 :- dynamic(playerWon/1).
 :- dynamic(skipped/0).
 :- dynamic(calledInternally/0).
+:- dynamic(lastCard/1).
+:- dynamic(lastActionCard/1).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -43,6 +47,7 @@ startGame :-
     format("\nGiliran ~w", [First]),
     % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
     asserta(started),
+    asserta(lastCard(Discard)),
     asserta(currentPlayer(First)),
     asserta(turnOrder([First | Rest])), !.
 
