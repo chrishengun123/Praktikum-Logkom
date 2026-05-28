@@ -115,6 +115,14 @@ switchPlayer(Player, NextPlayer) :-
     asserta(currentPlayer(NextPlayer)),
     (skipped -> retract(skipped) ; true).
 
+setLastCard(Card, NewCard) :-
+    retract(lastCard(Card)),
+    asserta(lastCard(NewCard)).
+
+setLastActionCard(Card, NewCard) :-
+    retract(lastActionCard(Card)),
+    asserta(lastActionCard(NewCard)).
+
 cardEffect([_, Type]) :-
     currentPlayer(Player),
     turnOrder(Order),
@@ -187,20 +195,19 @@ playCard(Idx) :-
     I is Idx-1,
     get_element(Cards, I, Card),
     [Color, Type] = Card,
-    read_file('discard.txt', SubDiscardPile),
-    [LastCard|_] = SubDiscardPile,
+    lastCard(LastCard),
     [LastColor, LastType] = LastCard,
     (
-    (((SubDiscardPile == []; Color == 'black';
+    (((Color == 'black';
     Color == LastColor; Type == LastType),
     \+ (Type == 'wild', LastType == 'wild'),
     \+ (Type == 'wild_draw_four', LastType == 'wild_draw_four'),
     \+ (Type == 'wild', LastType == 'wild_draw_four')),
     \+ (Type == 'wild_draw_four', LastType == 'wild') ->
         delete_at(Cards, I, NewCards),
-        DiscardPile = [Card | SubDiscardPile],
+        setLastCard(LastCard, Card),
+        ((Type == 'skip'; Type == 'reverse'; Type == 'draw_2'; Type == 'wild_draw_four') -> lastActionCard(LastActionCard), setLastActionCard(LastActionCard, Card)),
         write_file(Player, NewCards),
-        write_file('discard.txt', DiscardPile),
         format("~w memainkan kartu: ", [Player]),
         format("~w-~w.\n", Card),
         (stated_uni(Player) -> format("~w menyerukan UNI!\n", [Player]) ; true),
@@ -214,6 +221,8 @@ playCard(Idx) :-
     );
         format("kartu ~w-~w tidak bisa dimainkan", Card)
     ).
+
+mainkanKartu(I) :- playCard(I), !.
 
 mainkanKartu(I) :- playCard(I), !.
 
