@@ -123,7 +123,7 @@ setLastActionCard(Card, NewCard) :-
     retract(lastActionCard(Card)),
     asserta(lastActionCard(NewCard)).
 
-cardEffect([_, Type]) :-
+cardEffect([Color, Type]) :-
     currentPlayer(Player),
     turnOrder(Order),
     get_length(Order, PlayerAmount),
@@ -165,8 +165,7 @@ cardEffect([_, Type]) :-
         format("Pilih warna:\n", []),
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
-        read_file('discard.txt', [_|SubDiscardPile]),
-        write_file('discard.txt', [[NewColor, Type]|SubDiscardPile]),
+        setLastCard([Color, Type], [NewColor, Type]),
         format("Giliran ~w\n.", [Player])
     );
     ((Type == 'wild_draw_four') ->
@@ -176,8 +175,7 @@ cardEffect([_, Type]) :-
         read(NewColor),
         format("Warna aktif sekarang: ~w", [NewColor]),
         format("Giliran ~w\n.", [Player]),
-        read_file('discard.txt', [_|SubDiscardPile]),
-        write_file('discard.txt', [[NewColor, Type]|SubDiscardPile]),
+        setLastCard([Color, Type], [NewColor, Type]),
         asserta(skipped)
     );
     true.
