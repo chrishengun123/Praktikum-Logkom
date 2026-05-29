@@ -177,9 +177,7 @@ cardEffect([Color, Type]) :-
         format("~w mendapatkan 4 kartu acak.\n", [Player]),
         asserta(skipped)
     );
-    true,
-    ((Color == 'black') -> changeColor([Color, Type])),
-    format("Giliran ~w\n.", [Player]).
+    true.
 
 check_reverse([_, Type]) :-
     (Type == 'reverse' -> write('It is a reverse'); write('It is something else')).
@@ -216,7 +214,9 @@ playCard(Idx) :-
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer),
-        cardEffect(Card)
+        cardEffect(Card),
+        ((Color == 'black') -> changeColor([Color, Type])),
+        format("Giliran ~w\n.", [Player])
     );
         format("kartu ~w-~w tidak bisa dimainkan", Card)
     ).
