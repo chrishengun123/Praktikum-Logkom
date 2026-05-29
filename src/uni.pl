@@ -48,6 +48,7 @@ startGame :-
     % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
     asserta(started),
     asserta(lastCard(Discard)),
+    asserta(lastActionCard(['black','wild'])),
     asserta(currentPlayer(First)),
     asserta(turnOrder([First | Rest])), !.
 
@@ -132,8 +133,7 @@ cardEffect([Color, Type]) :-
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer),
-        format("Giliran ~w\n.", [NextPlayer])
+        switchPlayer(Player, NextPlayer)
     );
     ((Type == 'reverse') ->
         currentPlayer(Player),
@@ -146,8 +146,7 @@ cardEffect([Color, Type]) :-
         NextTurn is (Turn+2) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
         switchPlayer(Player, NextPlayer),
-        write('Giliran berubah arah.'), nl,
-        format("Giliran ~w.\n",[NextPlayer])
+        write('Giliran berubah arah.'), nl
     );
     ((Type == 'draw_2') ->
         currentPlayer(Player),
@@ -158,27 +157,21 @@ cardEffect([Color, Type]) :-
         get_index(Order, Player, Turn),
         NextTurn is (Turn+1) mod PlayerAmount,
         get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer),
-        format("Giliran ~w\n.", [NextPlayer])
-    );
-    ((Type == 'wild') ->
-        format("Pilih warna:\n", []),
-        read(NewColor),
-        format("Warna aktif sekarang: ~w", [NewColor]),
-        setLastCard([Color, Type], [NewColor, Type]),
-        format("Giliran ~w\n.", [Player])
+        switchPlayer(Player, NextPlayer)
     );
     ((Type == 'wild_draw_four') ->
         currentPlayer(Player),
         format("~w mendapatkan 4 kartu acak.\n", [Player]),
-        format("Pilih warna: ", []),
-        read(NewColor),
-        format("Warna aktif sekarang: ~w", [NewColor]),
-        format("Giliran ~w\n.", [Player]),
-        setLastCard([Color, Type], [NewColor, Type]),
         asserta(skipped)
     );
-    true.
+    true,
+    ((Color == 'black') ->
+        format("Pilih warna:\n", []),
+        read(NewColor),
+        format("Warna aktif sekarang: ~w", [NewColor]),
+        setLastCard([Color, Type], [NewColor, Type])
+    ),
+    format("Giliran ~w\n.", [Player]).
 
 check_reverse([_, Type]) :-
     (Type == 'reverse' -> write('It is a reverse'); write('It is something else')).
