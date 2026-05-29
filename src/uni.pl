@@ -474,7 +474,7 @@ countCards([Card | Rest], Total) :-
 cardValue([_, Type], V) :-
   ( Type == '0' -> V = 1
     ; ownMember(Type, ['1','2','3','4','5','6','7','8','9']) ->
-        name(Type, [Code]), V is Code - 0'0
+        name(Type, [Code]), V is Code - 0
     ; ownMember(Type, ['skip','reverse','draw_2']) -> V = 10
     ; ownMember(Type, ['wild','wild_draw_four']) -> V = 20
     ; V = 0
@@ -506,7 +506,7 @@ insert([P1, S1], [[P2, S2] | T], [[P1, S1], [P2, S2] | T]) :-
     S1 =< S2.
 insert(X, [], [X]).
 
-save :- true.
+% save :- true.
 load :- true.
 
 exit :-
