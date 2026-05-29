@@ -136,6 +136,11 @@ cardEffect([Color, Type]) :-
     currentPlayer(Player),
     turnOrder(Order),
     get_length(Order, PlayerAmount),
+    ((Type == 'mimic') ->
+        lastActionCard([_, LastAction]),
+        format("Kartu mimic menyalin efek ~w", [LastAction]),
+        cardEffect([Color, LastAction])
+    ),
     ((Type == 'skip') ->
         write('Pemain berikutnya kehilangan giliran.'),nl,
         get_index(Order, Player, Turn),
