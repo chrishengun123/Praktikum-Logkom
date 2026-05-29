@@ -124,6 +124,14 @@ setLastActionCard(Card, NewCard) :-
     retract(lastActionCard(Card)),
     asserta(lastActionCard(NewCard)).
 
+changeColor([Color, Type]) :-
+    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'hitam')) -> format("~w bukan warna yang valid\n", [Color])),
+    format("Pilih warna (merah/kuning/hijau/biru):\n", []),
+    read(NewColor),
+    setLastCard([Color, Type], [NewColor, Type]),
+    ((NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru') -> format("Warna aktif sekarang: ~w", [NewColor]));
+    changeColor([NewColor, Type]).
+
 cardEffect([Color, Type]) :-
     currentPlayer(Player),
     turnOrder(Order),
@@ -165,12 +173,7 @@ cardEffect([Color, Type]) :-
         asserta(skipped)
     );
     true,
-    ((Color == 'black') ->
-        format("Pilih warna:\n", []),
-        read(NewColor),
-        format("Warna aktif sekarang: ~w", [NewColor]),
-        setLastCard([Color, Type], [NewColor, Type])
-    ),
+    ((Color == 'black') -> changeColor([Color, Type])),
     format("Giliran ~w\n.", [Player]).
 
 check_reverse([_, Type]) :-
