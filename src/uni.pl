@@ -505,7 +505,60 @@ insert([P1, S1], [[P2, S2] | T], [[P1, S1], [P2, S2] | T]) :-
     S1 =< S2.
 insert(X, [], [X]).
 
-% save :- true.
+save :- saveGame.
+saveGame :-
+    format("~nMasukkan nama file penyimpanan: ", []),
+    read(File),
+    % format(atom(FileName), "~w.txt", [File]),
+    % use this if format isn't allowed
+    atom_codes(File, BaseCodes),
+    atom_codes('.txt', ExtensionCodes),
+    append(BaseCodes, ExtensionCodes, FullCodes),
+    atom_codes(FileName, FullCodes),
+    open(FileName, write, Stream),
+    % player order
+    turnOrder(Order),
+    format(Stream, "~nurutan_pemain: ~w.", [Order]),
+    % whose turn is it currently
+    currentPlayer(Player),
+    format(Stream, "~ngiliran: '~w'.", [Player]),
+    % top of discard pile
+    lastCard(Card),
+    format(Stream, "~ndiscard_top: ~w.", [Card]),
+    % color of top of discard pile. NOTE: this CAN say 'hitam' because of the wild cards
+    [Color,_] = Card,
+    format(Stream, "~nwarna_aktif: ~w.", [Color]),
+    % fuckk i might need to make a new predicate for arah_permainan TwT (update: i did)
+    format(Stream, "~narah_permainan: ~w.", [nothingyet/*kanan atau kiri, depending on direction of who the next player is in turnOrder*/]),
+    % who stated uni
+    getWhoeverTheFuckHasStatedUni(Order, WhoeverTheFuckHasStatedUni),
+    format(Stream, "~nstatus_UNI: ~w.", [WhoeverTheFuckHasStatedUni]),
+    % save each player's cards
+    savePlayerInfo(Order, Stream).
+
+getWhoeverTheFuckHasStatedUni([], []).
+getWhoeverTheFuckHasStatedUni([CurrentPlayer | Rest], WhoeverTheFuckHasStatedUni) :- 
+    (stated_uni(CurrentPlayer) -> WhoeverTheFuckHasStatedUni = [CurrentPlayer | Tail] 
+    ;
+    WhoeverTheFuckHasStatedUni = Tail),
+    getWhoeverTheFuckHasStatedUni(Rest, Tail).
+
+savePlayerInfo([], _) :- !.
+savePlayerInfo([CurrentPlayer | Rest], Stream) :-
+    % now to write each of the player's cards............
+    read_file(CurrentPlayer, Cards),
+    format(Stream, "~nkartu('~w'): ~w.", [CurrentPlayer, Cards]),
+    savePlayerInfo(Rest, Stream).
+
+/* some things to note: 
+- saving only fully writes into file once you halt the process, done by either typing "halt." or by clicking the close button
+which means if you save mid game and you continue playing, save file is created but still empty (might not be an issue but idk just in case)
+- savePlayerInfo currently reads from player files, then add it to the save file
+which might need to be changed later since we can't have extra player files (?)
+- arah_permainan currently prints out 'nothingyet' as i haven't implemented how to get the direction of play
+currently when you play a reverse, the code just flips the order without tracking if it goes 'kanan' or 'kiri'
+might need to add a new dynamic predicate later, like adding reverseCount where odd = 'kiri' and even = 'kanan' or direction = 'kiri' or 'kanan'
+*/
 load :- true.
 
 exit :-
