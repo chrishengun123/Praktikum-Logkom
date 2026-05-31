@@ -256,8 +256,8 @@ tangkap(Nama) :-
 
 % take a card and change the current player
 ambilKartu :-
-    ((skipped, \+ calledInternally) -> ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,format("~w mendapatkan 2 kartu acak.\n", [Player]));
     currentPlayer(Player),
+    ((skipped, \+ calledInternally) -> ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,format("~w mendapatkan 4 kartu acak.\n", [Player]));
     read_file(Player, Hand),
     read_file('pool.txt', Draw),
     shuffle(Draw, ShuffledDeck),
