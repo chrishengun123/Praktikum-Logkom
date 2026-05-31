@@ -13,6 +13,7 @@
 :- dynamic(calledInternally/0).
 :- dynamic(lastCard/1).
 :- dynamic(lastActionCard/1).
+:- dynamic(direction/1).
 
 startGame :-
     started -> format("Permainan sudah dimulai. Gunakan \"exit\" untuk keluar dan memulai ulang.", []);
@@ -47,7 +48,8 @@ startGame :-
     asserta(lastCard(Discard)),
     asserta(lastActionCard(['black','wild'])),
     asserta(currentPlayer(First)),
-    asserta(turnOrder([First | Rest])), !.
+    asserta(turnOrder([First | Rest])),
+    asserta(direction('kanan')), !.
 
 validify(PlayerNum, ValidNum) :-
     (PlayerNum > 4 ; PlayerNum < 2)
@@ -129,6 +131,18 @@ changeColor([Color, Type]) :-
     ((NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru') -> format("Warna aktif sekarang: ~w", [NewColor]));
     changeColor([NewColor, Type]).
 
+switchDirection :-
+    (direction('kiri') -> retract(direction('kiri')), asserta(direction('kanan'))); (retract(direction('kanan')), asserta(direction('kiri'))).
+
+nextPlayer :-
+    currentPlayer(Player),
+    turnOrder(Order),
+    get_index(Order, Player, Turn),
+    get_length(Order, PlayerAmount),
+    ((direction('kiri') -> NewTurn is (PlayerAmount+Turn-1) mod PlayerAmount); (NewTurn is (Turn+1) mod PlayerAmount)),
+    get_element(Order, NewTurn, NextPlayer),
+    switchPlayer(Player, NextPlayer).
+
 cardEffect([Color, Type]) :-
     currentPlayer(Player),
     turnOrder(Order),
@@ -140,22 +154,11 @@ cardEffect([Color, Type]) :-
     ),
     ((Type == 'skip') ->
         write('Pemain berikutnya kehilangan giliran.'),nl,
-        get_index(Order, Player, Turn),
-        NextTurn is (Turn+1) mod PlayerAmount,
-        get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer)
+        nextPlayer
     );
     ((Type == 'reverse') ->
-        currentPlayer(Player),
-        turnOrder(Order),
-        get_length(Order, PlayerAmount),
-        reverse_list(Order, NewOrder),
-        retract(turnOrder(Order)),
-        asserta(turnOrder(NewOrder)),
-        get_index(Order, Player, Turn),
-        NextTurn is (Turn+2) mod PlayerAmount,
-        get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer),
+        switchDirection,
+        nextPlayer, nextPlayer,
         write('Giliran berubah arah.'), nl
     );
     ((Type == 'draw_2') ->
@@ -164,10 +167,7 @@ cardEffect([Color, Type]) :-
         get_length(Order, PlayerAmount),
         ambilKartuInternal, ambilKartuInternal,
         format("~w mendapatkan 2 kartu acak.\n", [Player]),
-        get_index(Order, Player, Turn),
-        NextTurn is (Turn+1) mod PlayerAmount,
-        get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer)
+        nextPlayer
     );
     ((Type == 'wild_draw_four') ->
         currentPlayer(Player),
@@ -205,15 +205,11 @@ playCard(Idx) :-
         format("~w memainkan kartu: ", [Player]),
         format("~w-~w.\n", Card),
         (stated_uni(Player) -> format("~w menyerukan UNI!\n", [Player]) ; true),
-        turnOrder(Order),
-        get_length(Order, PlayerAmount),
-        get_index(Order, Player, Turn),
-        NextTurn is (Turn+1) mod PlayerAmount,
-        get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer),
+        nextPlayer,
         cardEffect(Card),
         ((Color == 'black') -> changeColor([Color, Type])),
-        format("Giliran ~w\n.", [Player])
+        currentPlayer(NextPlayer),
+        format("Giliran ~w\n.", [NextPlayer])
     );
         format("kartu ~w-~w tidak bisa dimainkan", Card)
     ).
