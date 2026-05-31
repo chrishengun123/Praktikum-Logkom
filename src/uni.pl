@@ -127,7 +127,7 @@ setLastActionCard(Card, NewCard) :-
     asserta(lastActionCard(NewCard)).
 
 changeColor([Color, Type]) :-
-    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'hitam')) -> format("~w bukan warna yang valid\n", [Color])),
+    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'black')) -> format("~w bukan warna yang valid\n", [Color])),
     format("Pilih warna (merah/kuning/hijau/biru):\n", []),
     read(NewColor),
     setLastCard([Color, Type], [NewColor, Type]),
