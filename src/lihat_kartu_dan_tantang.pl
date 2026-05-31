@@ -1,5 +1,4 @@
 peek :- lihatKartu. % js to make it faster
-/* THIS ONE WORKS, BUT IS NOT EXACTLY THE SAME AS THE EXAMPLE IN THE SPEK*/ 
 lihatKartu :-
     (\+ started -> fail);
     currentPlayer(Player),

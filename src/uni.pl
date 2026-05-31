@@ -500,7 +500,7 @@ saveGame :-
     open(FileName, write, Stream),
     % player order
     turnOrder(Order),
-    format(Stream, "~nurutan_pemain: ~w.", [Order]),
+    format(Stream, "urutan_pemain: ~w.", [Order]),
     % whose turn is it currently
     currentPlayer(Player),
     format(Stream, "~ngiliran: '~w'.", [Player]),
@@ -511,12 +511,14 @@ saveGame :-
     [Color,_] = Card,
     format(Stream, "~nwarna_aktif: ~w.", [Color]),
     % fuckk i might need to make a new predicate for arah_permainan TwT (update: i did)
-    format(Stream, "~narah_permainan: ~w.", [nothingyet/*kanan atau kiri, depending on direction of who the next player is in turnOrder*/]),
+    direction(DirectionOfPlay),
+    format(Stream, "~narah_permainan: ~w.", [DirectionOfPlay]),
     % who stated uni
     getWhoeverTheFuckHasStatedUni(Order, WhoeverTheFuckHasStatedUni),
     format(Stream, "~nstatus_UNI: ~w.", [WhoeverTheFuckHasStatedUni]),
     % save each player's cards
-    savePlayerInfo(Order, Stream).
+    savePlayerInfo(Order, Stream),
+    format("~nStatus permainan berhasil disimpan ke '~w.txt'.", [File]).
 
 getWhoeverTheFuckHasStatedUni([], []).
 getWhoeverTheFuckHasStatedUni([CurrentPlayer | Rest], WhoeverTheFuckHasStatedUni) :- 
