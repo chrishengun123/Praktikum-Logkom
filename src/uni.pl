@@ -242,7 +242,6 @@ tangkap(Nama) :-
     get_length(LastHand, Length),
     currentPlayer(Player),
     turnOrder(Order),
-    get_length(Order, PlayerAmount),
     ((stated_uni(Nama) ; Length > 1) -> 
     format("Perintah tangkap tidak valid. ~w mendapatkan 1 kartu penalti.\n", [Player]),
     ambilKartuInternal; 
