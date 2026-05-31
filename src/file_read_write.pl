@@ -3,11 +3,20 @@ get_color_and_type_string([Char | SubCard], [Color, Type]) :-
     get_color_and_type_string(SubCard, [SubColor, Type]),
     Color = [Char | SubColor].
 
+list_to_atom([H|T], Atom) :-
+    format("~w\n", [T]),
+    (T == [], !, Atom = H);
+    (list_to_atom(T, TailAtom),
+    name(H, Hcode),
+    name(TailAtom, TailAtomCode),
+    ownAppend(Hcode, TailAtomCode, Code),
+    name(Atom, Code)).
+
 % Converts the card name to usable card data.
 card_name_to_card(CardName, [Color, Type]) :- 
     get_color_and_type_string(CardName, [ColorList,TypeList]),
-    name(Color, ColorList),
-    name(Type, TypeList).
+    list_to_atom(ColorList, Color),
+    list_to_atom(TypeList, Type).
 
 % Returns the first card name in the list and removes it from the list.
 read_card([Char | SubList], NewList, CardName) :-
