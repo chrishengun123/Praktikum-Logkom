@@ -174,7 +174,6 @@ cardEffect([Color, Type]) :-
     );
     ((Type == 'wild_draw_four') ->
         currentPlayer(Player),
-        format("~w mendapatkan 4 kartu acak.\n", [Player]),
         asserta(skipped)
     );
     true.
