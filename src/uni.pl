@@ -275,7 +275,7 @@ ambilKartu :-
     format("~w-~w\n", [Color, Type]),
     nextPlayer,
     currentPlayer(NextPlayer),
-    format("Giliran ~w.\n", [NextPlayer]))),
+    format("Giliran ~w.\n", [NextPlayer])),
     !.
 
 ambilKartuInternal :-
