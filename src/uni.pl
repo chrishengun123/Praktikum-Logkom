@@ -202,7 +202,7 @@ playCard(Idx) :-
     \+ (Type == 'wild_draw_four', LastType == 'wild') ->
         delete_at(Cards, I, NewCards),
         setLastCard(LastCard, Card),
-        ((Type == 'skip'; Type == 'reverse'; Type == 'draw_2'; Type == 'wild_draw_four') -> lastActionCard(LastActionCard), setLastActionCard(LastActionCard, Card); true),
+        ((Type == 'skip'; Type == 'reverse'; Type == 'draw_two'; Type == 'wild_draw_four') -> lastActionCard(LastActionCard), setLastActionCard(LastActionCard, Card); true),
         write_file(Player, NewCards),
         format("~w memainkan kartu: ", [Player]),
         format("~w-~w.\n", Card),
@@ -294,7 +294,7 @@ lihatCommand :-
     currentPlayer(CurrentPlayer),
     read_file(CurrentPlayer, PlayerCards),
     (LastType == 'wild_draw_four' -> format("1. ambilKartu\n2. tantang", []); true),
-    (LastType == 'draw_2' -> format("1. ambilKartu", []); true),
+    (LastType == 'draw_two' -> format("1. ambilKartu", []); true),
     ((hasColor(PlayerCards, LastColor) ; hasType(PlayerCards, LastType)) -> format("1. mainkanKartu", []) ; format("1. ambilKartu", [])),
     format("\n", []),
     format("\nAksi pendukung yang tersedia:\n", []),
@@ -454,7 +454,7 @@ cardValue([_, Type], V) :-
   ( Type == '0' -> V = 1
     ; ownMember(Type, ['1','2','3','4','5','6','7','8','9']) ->
         name(Type, [Code]), V is Code - 0
-    ; ownMember(Type, ['skip','reverse','draw_2']) -> V = 10
+    ; ownMember(Type, ['skip','reverse','draw_two']) -> V = 10
     ; ownMember(Type, ['wild','wild_draw_four', 'mimic']) -> V = 20
     ; V = 0
     ).
