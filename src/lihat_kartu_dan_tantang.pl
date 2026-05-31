@@ -38,11 +38,11 @@ tantang :-
     hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType)),
     nextPlayer,
     currentPlayer(NextPlayer),
-    format("Giliran ~w.~n", [NextPlayer]). 
+    format("Giliran ~w.~n", [NextPlayer]),!. 
 % logic: tantangan berhasil
 hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (hasColor(LastPlayerCards, LastColor) ; hasType(LastPlayerCards, LastType)) -> 
-    (format("Tantangan berhasil! ~w mendapatkan 4 kartu acak.", [LastPlayer]),
+    (format("Tantangan berhasil! ~w mendapatkan 4 kartu acak.\n", [LastPlayer]),
     switchPlayer(Player, LastPlayer),
     ambilKartuInternal, 
     ambilKartuInternal, 
@@ -52,7 +52,7 @@ hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :-
 % tantangan gagal
 hasSameColorOrType(Player, _LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (\+(hasColor(LastPlayerCards, LastColor)), \+(hasType(LastPlayerCards, LastType))) -> 
-    (format("Tantangan gagal! ~w mendapatkan 6 kartu acak.", [Player]),
+    (format("Tantangan gagal! ~w mendapatkan 6 kartu acak.\n", [Player]),
     ambilKartuInternal, 
     ambilKartuInternal, 
     ambilKartuInternal, 

@@ -127,11 +127,11 @@ setLastActionCard(Card, NewCard) :-
     asserta(lastActionCard(NewCard)).
 
 changeColor([Color, Type]) :-
-    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'hitam')) -> format("~w bukan warna yang valid\n", [Color])),
     format("Pilih warna (merah/kuning/hijau/biru):\n", []),
     read(NewColor),
+    ((\+ (NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru'; NewColor == 'hitam')) -> format("~w bukan warna yang valid\n", [NewColor]); true),
     setLastCard([Color, Type], [NewColor, Type]),
-    ((NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru') -> format("Warna aktif sekarang: ~w", [NewColor]));
+    ((NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru') -> format("Warna aktif sekarang: ~w\n", [NewColor]));
     changeColor([NewColor, Type]).
 
 switchDirection :-
@@ -256,7 +256,7 @@ tangkap(Nama) :-
 
 % take a card and change the current player
 ambilKartu :-
-    ((skipped, \+ calledInternally) -> ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal);
+    ((skipped, \+ calledInternally) -> ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,format("~w mendapatkan 2 kartu acak.\n", [Player]));
     currentPlayer(Player),
     read_file(Player, Hand),
     read_file('pool.txt', Draw),
@@ -566,7 +566,6 @@ resetState :-
   retractAllX(stated_uni(_)),
   retractAllX(lastCard(_)),
   retractAllX(skipped),
-  retractAllX(direction(_)),
   retractAllX(tmpDiscardType(_)),
   retractAllX(tmpActiveColor(_)).
 
@@ -585,7 +584,7 @@ applyTerm(Key:Value) :-
     Key == giliran -> asserta(currentPlayer(Value));
     Key == warna_aktif -> asserta(tmpActiveColor(Value));
     Key == status_UNI -> assertUni(Value);
-    Key == arah_permainan -> true; asserta(direction(Value));
+    Key == arah_permainan -> true; /* NOTE: add arah_permainan dynamic in uni.pl */
     Key == discard_top -> Value = _-Type, asserta(tmpDiscardType(Type));
     Key = kartu(Name) -> normalizeCards(Value, N), write_file(Name, N);
     true
@@ -622,3 +621,14 @@ intToAtom(6, '6').
 intToAtom(7, '7').
 intToAtom(8, '8').
 intToAtom(9, '9').
+
+exit :-
+    \+ started -> format("Permainan belum dimulai. Gunakan \"start\" untuk memulai.", []),
+                  fail;
+    read_file('kartu_13525065.txt', Cards),
+    open('hasil_13525065.txt', write, Stream),
+    (Cards = [] -> format(Stream, 'Status: Menang\n', []);
+     format(Stream, "Status: Tidak Selesai\n", [])),
+    format(Stream, "Sisa Kartu: ~w", [Cards]),
+    format("Hasil permainan telah disimpan ke hasil_13525065.txt.\nSampai jumpa di meja kartu berikutnya.\n", []),
+   close(Stream).
