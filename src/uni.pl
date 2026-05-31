@@ -275,7 +275,7 @@ ambilKartu :-
     format("~w-~w\n", [Color, Type]),
     nextPlayer,
     currentPlayer(NextPlayer),
-    format("Giliran ~w.\n", [NextPlayer])),
+    format("Giliran ~w.\n", [NextPlayer]))),
     !.
 
 ambilKartuInternal :-
@@ -296,7 +296,7 @@ lihatCommand :-
     [LastColor, LastType] = DiscardPile,
     currentPlayer(CurrentPlayer),
     read_file(CurrentPlayer, PlayerCards),
-    (skipped -> format("1. ambilKartu\n2. tantang", []); true);
+    (skipped -> format("1. ambilKartu\n2. tantang", []); true),
     ((hasColor(PlayerCards, LastColor) ; hasType(PlayerCards, LastType)) -> format("1. mainkanKartu", []) ; format("1. ambilKartu", [])),
     format("\n", []),
     format("\nAksi pendukung yang tersedia:\n", []),
