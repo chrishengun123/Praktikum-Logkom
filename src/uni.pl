@@ -458,7 +458,7 @@ cardValue([_, Type], V) :-
     ; ownMember(Type, ['1','2','3','4','5','6','7','8','9']) ->
         name(Type, [Code]), V is Code - 0
     ; ownMember(Type, ['skip','reverse','draw_2']) -> V = 10
-    ; ownMember(Type, ['wild','wild_draw_four']) -> V = 20
+    ; ownMember(Type, ['wild','wild_draw_four', 'mimic']) -> V = 20
     ; V = 0
     ).
 
