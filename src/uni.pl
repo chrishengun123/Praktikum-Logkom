@@ -566,6 +566,7 @@ resetState :-
   retractAllX(stated_uni(_)),
   retractAllX(lastCard(_)),
   retractAllX(skipped),
+  retractAllX(direction(_)),
   retractAllX(tmpDiscardType(_)),
   retractAllX(tmpActiveColor(_)).
 
@@ -584,7 +585,7 @@ applyTerm(Key:Value) :-
     Key == giliran -> asserta(currentPlayer(Value));
     Key == warna_aktif -> asserta(tmpActiveColor(Value));
     Key == status_UNI -> assertUni(Value);
-    Key == arah_permainan -> true; /* NOTE: add arah_permainan dynamic in uni.pl */
+    Key == arah_permainan -> true; asserta(direction(Value));
     Key == discard_top -> Value = _-Type, asserta(tmpDiscardType(Type));
     Key = kartu(Name) -> normalizeCards(Value, N), write_file(Name, N);
     true
