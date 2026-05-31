@@ -154,7 +154,7 @@ cardEffect([Color, Type]) :-
         lastActionCard([_, LastAction]),
         format("Kartu mimic menyalin efek ~w", [LastAction]),
         cardEffect([Color, LastAction])
-    ),
+    );
     ((Type == 'skip') ->
         write('Pemain berikutnya kehilangan giliran.'),nl,
         nextPlayer
