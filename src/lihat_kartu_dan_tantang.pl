@@ -35,7 +35,10 @@ tantang :-
     lastCard(LastCard),
     % get lastcard color and number/type
     [LastColor, LastType] = LastCard,
-    hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType)),!.
+    hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType)),
+    nextPlayer,
+    currentPlayer(NextPlayer)
+    format("Giliran ~w.~n", [NextPlayer]). 
 % logic: tantangan berhasil
 hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :- 
     (hasColor(LastPlayerCards, LastColor) ; hasType(LastPlayerCards, LastType)) -> 
