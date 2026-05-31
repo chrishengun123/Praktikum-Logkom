@@ -18,9 +18,9 @@ printCards(Index, Length, [Card | Rest]) :-
 tantang :-
     (\+ started -> fail);
     % get discard pile
-    read_file('discard.txt', Discard),
-    [[_|Type]|_] = Discard,
-    (\+(Type == 'wild_draw_four')) -> format("Tidak bisa melakukan tantang.", []), fail;(
+    lastActionCard(LastAction),
+    [_, LastActionType] = LastAction,
+    (\+(LastActionType == 'wild_draw_four')) -> format("Tidak bisa melakukan tantang.", []), fail;(
     % get the last player that played
     format("Tantangan dilakukan!~n", []),
     currentPlayer(Player),
@@ -32,7 +32,7 @@ tantang :-
     % read the last player's cards
     format("Memeriksa kartu ~w...", [LastPlayer]),
     read_file(LastPlayer, LastPlayerCards), 
-    get_element(Discard, 1, LastCard),
+    lastCard(LastCard),
     % get lastcard color and number/type
     [LastColor, LastType] = LastCard,
     hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType)),!.

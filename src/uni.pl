@@ -540,6 +540,7 @@ which might need to be changed later since we can't have extra player files (?)
 currently when you play a reverse, the code just flips the order without tracking if it goes 'kanan' or 'kiri'
 might need to add a new dynamic predicate later, like adding reverseCount where odd = 'kiri' and even = 'kanan' or direction = 'kiri' or 'kanan'
 */
+
 load :- loadGame.
 loadGame :-
   format("Masukkan nama file yang akan dimuat: ", []),
@@ -608,7 +609,7 @@ normalizeCards([Color-Type | Rest], [[Color, FType] | NRest]) :-
   normalizeCards(Rest, NRest).
 
 fixType(T, A) :-
-  intToAtom(T, A), !,
+  intToAtom(T, A), !.
 fixType(T, T).
 
 intToAtom(0, '0').
