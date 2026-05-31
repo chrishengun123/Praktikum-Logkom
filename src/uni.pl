@@ -229,12 +229,8 @@ uni(I) :-
     ;
         format("Perintah UNI tidak valid. ~w mendapatkan 1 kartu penalti.\n", [Player]),
         ambilKartuInternal,
-        turnOrder(Order),
-        get_length(Order, PlayerAmount),
-        get_index(Order, Player, Turn),
-        NextTurn is (Turn+1) mod PlayerAmount,
-        get_element(Order, NextTurn, NextPlayer),
-        switchPlayer(Player, NextPlayer),
+        nextPlayer,
+        currentPlayer(NextPlayer),
         format("Giliran ~w.\n", [NextPlayer])
     ), !.
 
@@ -254,13 +250,8 @@ tangkap(Nama) :-
     format("~w mendapatkan 2 kartu penalti.\n", [Nama]),
     switchPlayer(Nama, Player)
     ),
-    currentPlayer(Player),
-    turnOrder(Order),
-    get_length(Order, PlayerAmount),
-    get_index(Order, Player, Turn),
-    NextTurn is (Turn+1) mod PlayerAmount,
-    get_element(Order, NextTurn, NextPlayer),
-    switchPlayer(Player, NextPlayer),
+    nextPlayer,
+    currentPlayer(NextPlayer),
     format("Giliran ~w.\n", [NextPlayer]), !.
 
 % take a card and change the current player
@@ -279,12 +270,8 @@ ambilKartu :-
     get_element(DrawnCard,0,Card),
     [Color, Type] = Card,
     format("~w-~w\n", [Color, Type]),
-    turnOrder(Order),
-    get_length(Order, PlayerAmount),
-    get_index(Order, Player, Turn),
-    NextTurn is (Turn+1) mod PlayerAmount,
-    get_element(Order, NextTurn, NextPlayer),
-    switchPlayer(Player, NextPlayer),
+    nextPlayer,
+    currentPlayer(NextPlayer),
     format("Giliran ~w.\n", [NextPlayer])),
     !.
 
