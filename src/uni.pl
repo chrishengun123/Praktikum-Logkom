@@ -622,14 +622,3 @@ intToAtom(6, '6').
 intToAtom(7, '7').
 intToAtom(8, '8').
 intToAtom(9, '9').
-
-exit :-
-    \+ started -> format("Permainan belum dimulai. Gunakan \"start\" untuk memulai.", []),
-                  fail;
-    read_file('kartu_13525065.txt', Cards),
-    open('hasil_13525065.txt', write, Stream),
-    (Cards = [] -> format(Stream, 'Status: Menang\n', []);
-     format(Stream, "Status: Tidak Selesai\n", [])),
-    format(Stream, "Sisa Kartu: ~w", [Cards]),
-    format("Hasil permainan telah disimpan ke hasil_13525065.txt.\nSampai jumpa di meja kartu berikutnya.\n", []),
-   close(Stream).
