@@ -37,7 +37,7 @@ tantang :-
     [LastColor, LastType] = LastCard,
     hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType)),
     nextPlayer,
-    currentPlayer(NextPlayer)
+    currentPlayer(NextPlayer),
     format("Giliran ~w.~n", [NextPlayer]). 
 % logic: tantangan berhasil
 hasSameColorOrType(Player, LastPlayer, LastPlayerCards, LastColor, LastType) :- 
