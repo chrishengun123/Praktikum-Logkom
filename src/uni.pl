@@ -294,7 +294,6 @@ lihatCommand :-
     currentPlayer(CurrentPlayer),
     read_file(CurrentPlayer, PlayerCards),
     (LastType == 'wild_draw_four' -> format("1. ambilKartu\n2. tantang", []); true),
-    (LastType == 'draw_two' -> format("1. ambilKartu", []); true),
     ((hasColor(PlayerCards, LastColor) ; hasType(PlayerCards, LastType)) -> format("1. mainkanKartu", []) ; format("1. ambilKartu", [])),
     format("\n", []),
     format("\nAksi pendukung yang tersedia:\n", []),
