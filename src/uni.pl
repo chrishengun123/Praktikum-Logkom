@@ -1,6 +1,3 @@
-:- include('random_card.pl').
-:- include('file_read_write.pl').
-:- include('lihat_kartu_dan_tantang.pl').
 % True when the game has started.
 :- dynamic(started/0).
 % The current player.
@@ -511,11 +508,10 @@ saveGame :-
     read(File),
     % format(atom(FileName), "~w.txt", [File]),
     % use this if format isn't allowed
-    atom_codes(File, BaseCodes),
-    atom_codes('.txt', ExtensionCodes),
-    append(BaseCodes, ExtensionCodes, FullCodes),
-    atom_codes(FileName, FullCodes),
-    open(FileName, write, Stream),
+    name(File, FileCode),
+    ownAppend(FileCode, ".txt", FileName),
+    name(FileName, FullCodes),
+    open(FullCodes, write, Stream),
     % player order
     turnOrder(Order),
     format(Stream, "~nurutan_pemain: ~w.", [Order]),
