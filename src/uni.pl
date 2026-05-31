@@ -210,6 +210,7 @@ playCard(Idx) :-
         ((Color == 'black') -> changeColor([Color, Type]); true),
         currentPlayer(NextPlayer),
         format("Giliran ~w\n.", [NextPlayer])
+        , !
     );
         format("kartu ~w-~w tidak bisa dimainkan", Card)
     ).
