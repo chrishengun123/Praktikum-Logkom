@@ -127,11 +127,11 @@ setLastActionCard(Card, NewCard) :-
     asserta(lastActionCard(NewCard)).
 
 changeColor([Color, Type]) :-
-    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'hitam')) -> format("~w bukan warna yang valid\n", [Color])),
     format("Pilih warna (merah/kuning/hijau/biru):\n", []),
     read(NewColor),
+    ((\+ (NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru'; NewColor == 'hitam')) -> format("~w bukan warna yang valid\n", [NewColor]); true),
     setLastCard([Color, Type], [NewColor, Type]),
-    ((NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru') -> format("Warna aktif sekarang: ~w", [NewColor]));
+    ((NewColor == 'merah'; NewColor == 'kuning'; NewColor == 'hijau'; NewColor == 'biru') -> format("Warna aktif sekarang: ~w\n", [NewColor]));
     changeColor([NewColor, Type]).
 
 switchDirection :-
