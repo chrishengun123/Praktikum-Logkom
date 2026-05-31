@@ -200,14 +200,14 @@ playCard(Idx) :-
     \+ (Type == 'wild_draw_four', LastType == 'wild') ->
         delete_at(Cards, I, NewCards),
         setLastCard(LastCard, Card),
-        ((Type == 'skip'; Type == 'reverse'; Type == 'draw_2'; Type == 'wild_draw_four') -> lastActionCard(LastActionCard), setLastActionCard(LastActionCard, Card)),
+        ((Type == 'skip'; Type == 'reverse'; Type == 'draw_2'; Type == 'wild_draw_four') -> lastActionCard(LastActionCard), setLastActionCard(LastActionCard, Card); true),
         write_file(Player, NewCards),
         format("~w memainkan kartu: ", [Player]),
         format("~w-~w.\n", Card),
         (stated_uni(Player) -> format("~w menyerukan UNI!\n", [Player]) ; true),
         nextPlayer,
         cardEffect(Card),
-        ((Color == 'black') -> changeColor([Color, Type])),
+        ((Color == 'black') -> changeColor([Color, Type]); true),
         currentPlayer(NextPlayer),
         format("Giliran ~w\n.", [NextPlayer])
     );
