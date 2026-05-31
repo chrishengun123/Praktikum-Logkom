@@ -139,7 +139,7 @@ nextPlayer :-
     turnOrder(Order),
     get_index(Order, Player, Turn),
     get_length(Order, PlayerAmount),
-    ((direction('kiri') -> NewTurn is (PlayerAmount+Turn-1) mod PlayerAmount); (NewTurn is (Turn+1) mod PlayerAmount)),
+    ((direction('kiri') -> NewTurn is (Turn-1) mod PlayerAmount); (NewTurn is (Turn+1) mod PlayerAmount)),
     get_element(Order, NewTurn, NextPlayer),
     switchPlayer(Player, NextPlayer).
 
