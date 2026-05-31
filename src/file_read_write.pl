@@ -4,7 +4,6 @@ get_color_and_type_string([Char | SubCard], [Color, Type]) :-
     Color = [Char | SubColor].
 
 list_to_atom([H|T], Atom) :-
-    format("~w\n", [T]),
     (T == [], !, Atom = H);
     (list_to_atom(T, TailAtom),
     name(H, Hcode),
