@@ -242,7 +242,6 @@ tangkap(Nama) :-
     get_length(LastHand, Length),
     currentPlayer(Player),
     turnOrder(Order),
-    get_length(Order, PlayerAmount),
     ((stated_uni(Nama) ; Length > 1) -> 
     format("Perintah tangkap tidak valid. ~w mendapatkan 1 kartu penalti.\n", [Player]),
     ambilKartuInternal; 
@@ -458,7 +457,7 @@ cardValue([_, Type], V) :-
     ; ownMember(Type, ['1','2','3','4','5','6','7','8','9']) ->
         name(Type, [Code]), V is Code - 0
     ; ownMember(Type, ['skip','reverse','draw_2']) -> V = 10
-    ; ownMember(Type, ['wild','wild_draw_four']) -> V = 20
+    ; ownMember(Type, ['wild','wild_draw_four', 'mimic']) -> V = 20
     ; V = 0
     ).
 
