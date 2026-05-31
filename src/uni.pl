@@ -260,6 +260,7 @@ ambilKartu :-
     ((skipped, \+ calledInternally) -> ambilKartuInternal, ambilKartuInternal, ambilKartuInternal, ambilKartuInternal,format("~w mendapatkan 4 kartu acak.\n", [Player]), nextPlayer,
     currentPlayer(NextPlayer),
     format("Giliran ~w.\n", [NextPlayer]));
+    currentPlayer(Player),
     read_file(Player, Hand),
     read_file('pool.txt', Draw),
     shuffle(Draw, ShuffledDeck),
