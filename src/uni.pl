@@ -305,8 +305,8 @@ display_status :-
 
 lihatCommand :-
     format("\nAksi utama yang tersedia:\n", []),
-    read_file('discard.txt', DiscardPile),
-    [[LastColor, LastType] | _] = DiscardPile,
+    lastCard(DiscardPile),
+    [LastColor, LastType] = DiscardPile,
     currentPlayer(CurrentPlayer),
     read_file(CurrentPlayer, PlayerCards),
     (LastType == 'wild_draw_four' -> format("1. ambilKartu\n2. tantang", []); true),
@@ -329,8 +329,7 @@ ownMember(X, [_ | Tail]) :-
   ownMember(X, Tail).
 
 cekInfo :- 
-    read_file('discard.txt', Discard),
-    [Top | _] = Discard,
+    lastCard(Top),
     format("\nKartu discard top: ~w-~w.\n", Top),
     turnOrder(Order),
     format("\nUrutan pemain: ",[]),
@@ -509,9 +508,9 @@ saveGame :-
     % format(atom(FileName), "~w.txt", [File]),
     % use this if format isn't allowed
     name(File, FileCode),
-    ownAppend(FileCode, ".txt", FileName),
+    ownAppend(FileCode, ".txt", FullCodes),
     name(FileName, FullCodes),
-    open(FullCodes, write, Stream),
+    open(FileName, write, Stream),
     % player order
     turnOrder(Order),
     format(Stream, "~nurutan_pemain: ~w.", [Order]),
