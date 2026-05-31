@@ -49,7 +49,7 @@ startGame :-
     % Make started true, currentPlayer to the first player, and turn order the same as the shuffled order
     asserta(started),
     asserta(lastCard(Discard)),
-    asserta(lastActionCard(['black','wild'])),
+    asserta(lastActionCard(['hitam','wild'])),
     asserta(currentPlayer(First)),
     asserta(turnOrder([First | Rest])),
     asserta(direction('kanan')), !.
@@ -127,7 +127,7 @@ setLastActionCard(Card, NewCard) :-
     asserta(lastActionCard(NewCard)).
 
 changeColor([Color, Type]) :-
-    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'black')) -> format("~w bukan warna yang valid\n", [Color])),
+    ((\+ (Color == 'merah'; Color == 'kuning'; Color == 'hijau'; Color == 'biru'; Color == 'hitam')) -> format("~w bukan warna yang valid\n", [Color])),
     format("Pilih warna (merah/kuning/hijau/biru):\n", []),
     read(NewColor),
     setLastCard([Color, Type], [NewColor, Type]),
@@ -164,7 +164,7 @@ cardEffect([Color, Type]) :-
         nextPlayer, nextPlayer,
         write('Giliran berubah arah.'), nl
     );
-    ((Type == 'draw_2') ->
+    ((Type == 'draw_two') ->
         currentPlayer(Player),
         turnOrder(Order),
         get_length(Order, PlayerAmount),
@@ -194,7 +194,7 @@ playCard(Idx) :-
     lastCard(LastCard),
     [LastColor, LastType] = LastCard,
     (
-    (((Color == 'black';
+    (((Color == 'hitam';
     Color == LastColor; Type == LastType),
     \+ (Type == 'wild', LastType == 'wild'),
     \+ (Type == 'wild_draw_four', LastType == 'wild_draw_four'),
@@ -209,7 +209,7 @@ playCard(Idx) :-
         (stated_uni(Player) -> format("~w menyerukan UNI!\n", [Player]) ; true),
         nextPlayer,
         cardEffect(Card),
-        ((Color == 'black') -> changeColor([Color, Type]); true),
+        ((Color == 'hitam') -> changeColor([Color, Type]); true),
         currentPlayer(NextPlayer),
         format("Giliran ~w\n.", [NextPlayer])
         , !
