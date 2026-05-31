@@ -1,18 +1,21 @@
-CONSULT_LIST := $(shell find . -name "*.pl" | awk '{print "--consult-file " $$1}')
-
 BUILD_DIR := build
-TARGET := $(BUILD_DIR)/logkomtubes
-SRC := $(shell find . -name "*.pl")
+TARGET    := $(BUILD_DIR)/logkomtubes.exe
+SRC       := $(shell find . -name "*.pl" -not -path "./$(BUILD_DIR)/*")
 
-.PHONY: runi build run
+CONSULT_FLAGS := $(foreach f, $(SRC), --consult-file $(f))
+
+.PHONY: runi build run clean
 
 runi:
-	gprolog $(CONSULT_LIST)
-	
+	gprolog $(CONSULT_FLAGS)
+
+run:
+	gprolog $(CONSULT_FLAGS) --query-goal "main"
+
 build:
 	@mkdir -p $(BUILD_DIR)
 	@rm -f $(TARGET)
-	@gplc $(SRC) -o $(TARGET)
+	gplc $(SRC) -o $(TARGET)
 
-run: build
-	./$(TARGET)
+clean:
+	rm -rf $(BUILD_DIR)
